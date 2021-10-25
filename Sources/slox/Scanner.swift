@@ -27,7 +27,7 @@ class Scanner {
             start = current
             scanToken()
         }
-        tokens.append(Token(.EOF, "", NSNull.self, line))
+        tokens.append(Token(.EOF, "", .NONE, line))
         return tokens
     }
     
@@ -65,9 +65,30 @@ class Scanner {
         case "\t": break
         case "\n":
             line += 1
+        case "\"":
+            addStringToken()
         default:
-            Lox.error(at: line, message: "Unexpected character.")
+            Lox.error(at: line, message: "Unexpected character: '\(character)'")
         }
+    }
+    
+    private func addStringToken() {
+        while peek() != "\"" && !isAtEnd() {
+            if peek() == "\n" {
+                line += 1
+            }
+            let _ = advance()
+        }
+        if isAtEnd() {
+            Lox.error(at: line, message: "Unterminated String.")
+            return
+        }
+        // The closing ".
+        let _ = advance()
+        
+        // Trim the surrounding quoats.
+        let value = String(source[source.index(after: start)..<source.index(before: current)])
+        addToken(type: .STRING, literal: .STRING(value))
     }
     
     private func match(_ character: String) -> Bool {
@@ -86,6 +107,7 @@ class Scanner {
         if isAtEnd() {
             return "\0"
         }
+        print("peek() \(source[current])")
         return String(source[current])
     }
     
@@ -94,10 +116,10 @@ class Scanner {
     }
     
     private func addToken(type: TokenType) {
-        addToken(type: type, literal: NSNull.self)
+        addToken(type: type, literal: .NONE)
     }
     
-    private func addToken(type: TokenType, literal: Any) {
+    private func addToken(type: TokenType, literal: Literal) {
         let text = String(source[start..<current])
         tokens.append(Token(type, text, literal, line))
     }
