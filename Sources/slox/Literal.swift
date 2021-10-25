@@ -15,9 +15,9 @@ enum Literal: CustomStringConvertible {
     var description: String {
         switch self {
         case .STRING(let value):
-            return String(value)
+            return "String \(value)"
         case .NUMBER(let value):
-            return String(value)
+            return "Number \(value)"
         case .NONE:
             return ""
         }

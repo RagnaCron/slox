@@ -8,6 +8,24 @@
 import Foundation
 
 class Scanner {
+    private static let keywords: [String : TokenType] = [
+        "and" : .AND,
+        "class" : .CLASS,
+        "else" : .ELSE,
+        "false" : .FALSE,
+        "for" : .FOR,
+        "fun" : .FUN,
+        "if" : .IF,
+        "nil" : .NIL,
+        "or" : .OR,
+        "print" : .PRINT,
+        "return" : .RETURN,
+        "super" : .SUPER,
+        "self" : .SELF,
+        "true" : .TRUE,
+        "var" : .VAR,
+        "while" : .WHILE
+    ]
     private var source: [Character]
     private var tokens: [Token]
     private var start: Int
@@ -69,7 +87,45 @@ class Scanner {
         case "\"":
             addStringToken()
         default:
-            Lox.error(at: line, inCol: start, position: "", message: "Unexpected character: '\(character)'")
+            if isDigit(character) {
+                addNumberToken()
+            } else if isAlpha(character) {
+                addIdentifierToken()
+            } else {
+                Lox.error(at: line, inCol: start, position: "", message: "Unexpected character: '\(character)'")
+            }
+        }
+    }
+    
+    private func addIdentifierToken() {
+        while isAlphaNumberic(peek()) {
+            let _ = advance()
+        }
+        let text = String(source[start..<current])
+        if let type = Scanner.keywords[text] {
+            addToken(type: type)
+        } else {
+            addToken(type: .IDENTIFIER)
+        }
+    }
+    
+    private func addNumberToken() {
+        func digit() {
+            while isDigit(peek()) {
+                let _ = advance()
+            }
+        }
+        digit()
+        // Look for a fracional part.
+        if peek() == "." && isDigit(peekNext()) {
+            // Consume "."
+            let _ = advance()
+            digit()
+        }
+        if let digit = Double(String(source[start..<current])) {
+            addToken(type: .NUMBER, literal: .NUMBER(digit))
+        } else {
+            Lox.error(at: line, inCol: current, position: "", message: "Could not convert String to Number")
         }
     }
     
@@ -109,6 +165,27 @@ class Scanner {
             return Character("\0")
         }
         return source[current]
+    }
+    
+    private func peekNext() -> Character {
+        if (current + 1) >= source.endIndex {
+            return "\0"
+        }
+        return source[current + 1]
+    }
+    
+    private func isAlphaNumberic(_ char: Character) -> Bool {
+        return isAlpha(char) || isDigit(char)
+    }
+    
+    private func isAlpha(_ char: Character) -> Bool {
+        return (char >= "a" && char <= "z")
+        || (char >= "A" && char <= "Z")
+        || (char == "_")
+    }
+    
+    private func isDigit(_ char: Character) -> Bool {
+        return char >= "0" && char <= "9"
     }
     
     private func isAtEnd() -> Bool {
