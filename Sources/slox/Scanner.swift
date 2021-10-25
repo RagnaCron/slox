@@ -63,14 +63,10 @@ class Scanner {
         case "+": addToken(type: .PLUS)
         case ";": addToken(type: .SEMICOLON)
         case "*": addToken(type: .STAR)
-        case "!":
-            addToken(type: match("=") ? .BANG_EQUAL : .BANG)
-        case "=":
-            addToken(type: match("=") ? .EQUAL_EQUAL : .EQUAL)
-        case "<":
-            addToken(type: match("=") ? .LESS_EQUAL : .LESS)
-        case ">":
-            addToken(type: match("=") ? .GREATER_EQUAL : .GREATER)
+        case "!": addToken(type: match("=") ? .BANG_EQUAL : .BANG)
+        case "=": addToken(type: match("=") ? .EQUAL_EQUAL : .EQUAL)
+        case "<": addToken(type: match("=") ? .LESS_EQUAL : .LESS)
+        case ">": addToken(type: match("=") ? .GREATER_EQUAL : .GREATER)
         case "/":
             if match(character) {
                 while peek() != "\n" && !isAtEnd() {
@@ -82,10 +78,8 @@ class Scanner {
         case " ": break
         case "\r": break
         case "\t": break
-        case "\n":
-            line += 1
-        case "\"":
-            addStringToken()
+        case "\n": line += 1
+        case "\"": addStringToken()
         default:
             if isDigit(character) {
                 addNumberToken()
