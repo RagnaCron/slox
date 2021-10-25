@@ -8,17 +8,18 @@
 import Foundation
 
 class Scanner {
-    private var source: String
+    private var source: [Character]
     private var tokens: [Token]
-    private var start: String.Index
-    private var current: String.Index
+    private var start: Int
+    private var current: Int
     private var line: Int
     
     init(_ source: String) {
-        self.source = source
+        self.source = source.map({$0})
+        print(self.source)
         self.tokens = Array()
-        self.start = source.startIndex
-        self.current = source.startIndex
+        self.start = 0
+        self.current = 0
         line = 1
     }
     
@@ -32,7 +33,7 @@ class Scanner {
     }
     
     private func scanToken() {
-        let character: String = advance()
+        let character = advance()
         switch character {
         case "(": addToken(type: .LEFT_PAREN)
         case ")": addToken(type: .RIGHT_PAREN)
@@ -65,7 +66,7 @@ class Scanner {
         case "\t": break
         case "\n":
             line += 1
-        case "\"":
+        case Character("\""):
             addStringToken()
         default:
             Lox.error(at: line, message: "Unexpected character: '\(character)'")
@@ -80,35 +81,34 @@ class Scanner {
             let _ = advance()
         }
         if isAtEnd() {
-            Lox.error(at: line, message: "Unterminated String.")
+            Lox.error(at: line, message: "Unterminated String.", position: "\(current)")
             return
         }
         // The closing ".
         let _ = advance()
-        
+
         // Trim the surrounding quoats.
-        let value = String(source[source.index(after: start)..<source.index(before: current)])
+        let value = String(source[(start + 1)..<(current - 1)])
         addToken(type: .STRING, literal: .STRING(value))
     }
     
-    private func match(_ character: String) -> Bool {
+    private func match(_ character: Character) -> Bool {
         if isAtEnd(){
             return false
             
         }
-        if String(source[current]) != character {
+        if source[current] != character {
             return false
         }
         current = source.index(after: current)
         return true
     }
     
-    private func peek() -> String {
+    private func peek() -> Character {
         if isAtEnd() {
-            return "\0"
+            return Character("\0")
         }
-        print("peek() \(source[current])")
-        return String(source[current])
+        return source[current]
     }
     
     private func isAtEnd() -> Bool {
@@ -124,9 +124,9 @@ class Scanner {
         tokens.append(Token(type, text, literal, line))
     }
     
-    private func advance() -> String {
-        let char = String(source[current])
-        current = source.index(after: current)
+    private func advance() -> Character {
+        let char = source[current]
+        current += 1
         return char
     }
 }

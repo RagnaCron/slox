@@ -36,7 +36,8 @@ class Lox {
     private func runPrompt() {
         while true {
             print("> ", separator: "", terminator: "")
-            let line = readLine(strippingNewline: false)
+//            let line = readLine(strippingNewline: false)
+            let line = readLine()
             if let l = line {
                 run(l)
                 Lox.hadError = false
@@ -55,7 +56,7 @@ class Lox {
         }
     }
 
-    static func error(at line: Int, message: String) {
+    static func error(at line: Int, message: String, position: String = "") {
         report(at: line, position: "", message: message)
     }
 
