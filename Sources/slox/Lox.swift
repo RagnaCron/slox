@@ -5,6 +5,8 @@
 import Foundation
 
 class Lox {
+    private var hadError = false
+
     // The entry point for the Lox interpreter to start its job.
     public func main() {
         if CommandLine.arguments.count > 2 {
@@ -26,20 +28,34 @@ class Lox {
             exit(1)
         }
         run(contents)
+        if hadError {
+            exit(65)
+        }
     }
 
     private func runPrompt() {
         while true {
             print("> ", separator: "", terminator: "")
-            let line = readLine() ?? ""
-            if line == "" {
+            let line = readLine()
+            if let l = line {
+                run(l)
+                hadError = false
+            } else {
                 break
             }
-            run(line)
         }
     }
 
     private func run(_ content: String) {
         print(content)
+    }
+
+    private func error(at line: Int, message: String) {
+        report(at: line, position: "", message: message)
+    }
+
+    private func report(at line: Int, position: String, message: String) {
+        print("[line \(line)] Error \(position): \(message)")
+        hadError = true
     }
 }
