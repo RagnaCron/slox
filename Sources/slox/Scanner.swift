@@ -32,7 +32,7 @@ class Scanner {
     }
     
     private func scanToken() {
-        let character = advance()
+        let character: String = advance()
         switch character {
         case "(": addToken(type: .LEFT_PAREN)
         case ")": addToken(type: .RIGHT_PAREN)
@@ -52,7 +52,21 @@ class Scanner {
             addToken(type: match("=") ? .LESS_EQUAL : .LESS)
         case ">":
             addToken(type: match("=") ? .GREATER_EQUAL : .GREATER)
-        default: Lox.error(at: line, message: "Unexpected character.")
+        case "/":
+            if match(character) {
+                while peek() != "\n" && !isAtEnd() {
+                    let _ = advance()
+                }
+            } else {
+                addToken(type: .SLASH)
+            }
+        case " ": break
+        case "\r": break
+        case "\t": break
+        case "\n":
+            line += 1
+        default:
+            Lox.error(at: line, message: "Unexpected character.")
         }
     }
     
@@ -68,6 +82,13 @@ class Scanner {
         return true
     }
     
+    private func peek() -> String {
+        if isAtEnd() {
+            return "\0"
+        }
+        return String(source[current])
+    }
+    
     private func isAtEnd() -> Bool {
         return current >= source.endIndex
     }
@@ -77,13 +98,13 @@ class Scanner {
     }
     
     private func addToken(type: TokenType, literal: Any) {
-        let text = source[start..<current]
-        tokens.append(Token(type, String(text), literal, line))
+        let text = String(source[start..<current])
+        tokens.append(Token(type, text, literal, line))
     }
     
     private func advance() -> String {
-        let char = source[current]
+        let char = String(source[current])
         current = source.index(after: current)
-        return String(char)
+        return char
     }
 }
