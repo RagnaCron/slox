@@ -7,8 +7,19 @@
 
 import Foundation
 
-enum Literal {
+enum Literal: CustomStringConvertible {
     case STRING(String)
     case NUMBER(Double)
     case NONE
+    
+    var description: String {
+        switch self {
+        case .STRING(let value):
+            return String(value)
+        case .NUMBER(let value):
+            return String(value)
+        case .NONE:
+            return ""
+        }
+    }
 }

@@ -69,7 +69,7 @@ class Scanner {
         case "\"":
             addStringToken()
         default:
-            Lox.error(at: line, in: start, position: "", message: "Unexpected character: '\(character)'")
+            Lox.error(at: line, inCol: start, position: "", message: "Unexpected character: '\(character)'")
         }
     }
     
@@ -81,7 +81,7 @@ class Scanner {
             let _ = advance()
         }
         if isAtEnd() {
-            Lox.error(at: line, in: current, position: "", message: "Unterminated String.")
+            Lox.error(at: line, inCol: current, position: "", message: "Unterminated String.")
             return
         }
         // The closing ".

@@ -56,11 +56,11 @@ class Lox {
         }
     }
 
-    static func error(at line: Int, in col: Int, position: String, message: String) {
-        report(at: line, in: col, position: position, message: message)
+    static func error(at line: Int, inCol col: Int, position: String, message: String) {
+        report(at: line, inCol: col, position: position, message: message)
     }
 
-    static func report(at line: Int, in col: Int, position: String, message: String) {
+    static func report(at line: Int, inCol col: Int, position: String, message: String) {
         print("[line \(line)][col \(col)] Error \(position): \(message)")
         hadError = true
     }
