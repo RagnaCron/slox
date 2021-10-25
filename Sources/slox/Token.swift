@@ -8,10 +8,10 @@ struct Token: CustomStringConvertible {
 
     let type: TokenType
     let lexeme: String
-    let literal: AnyObject
+    let literal: Any
     let line: Int
 
-    init(_ type: TokenType, _ lexeme: String, _ literal: AnyObject, _ line: Int) {
+    init(_ type: TokenType, _ lexeme: String, _ literal: Any, _ line: Int) {
         self.type = type
         self.lexeme = lexeme
         self.literal = literal

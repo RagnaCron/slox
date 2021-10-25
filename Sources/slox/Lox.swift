@@ -5,7 +5,7 @@
 import Foundation
 
 class Lox {
-    private var hadError = false
+    private static var hadError = false
 
     // The entry point for the Lox interpreter to start its job.
     public func main() {
@@ -28,7 +28,7 @@ class Lox {
             exit(1)
         }
         run(contents)
-        if hadError {
+        if Lox.hadError {
             exit(65)
         }
     }
@@ -39,7 +39,7 @@ class Lox {
             let line = readLine()
             if let l = line {
                 run(l)
-                hadError = false
+                Lox.hadError = false
             } else {
                 break
             }
@@ -55,11 +55,11 @@ class Lox {
         }
     }
 
-    private func error(at line: Int, message: String) {
+    static func error(at line: Int, message: String) {
         report(at: line, position: "", message: message)
     }
 
-    private func report(at line: Int, position: String, message: String) {
+    static func report(at line: Int, position: String, message: String) {
         print("[line \(line)] Error \(position): \(message)")
         hadError = true
     }
