@@ -4,7 +4,8 @@
 
 import Foundation
 
-struct Token {
+struct Token: CustomStringConvertible {
+
     let type: TokenType
     let lexeme: String
     let literal: AnyObject
@@ -15,5 +16,9 @@ struct Token {
         self.lexeme = lexeme
         self.literal = literal
         self.line = line
+    }
+
+    var description: String {
+        "\(type) \(lexeme) \(literal)"
     }
 }
