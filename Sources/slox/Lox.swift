@@ -46,8 +46,13 @@ class Lox {
         }
     }
 
-    private func run(_ content: String) {
-        print(content)
+    private func run(_ source: String) {
+        let scanner = Scanner(source)
+        let tokens = scanner.scanTokens()
+
+        for token in tokens {
+            print(token)
+        }
     }
 
     private func error(at line: Int, message: String) {
