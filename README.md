@@ -3,8 +3,11 @@
 An interpreter for Lox written in Swift. Provided for with an MIT License.
 
 Robert Nystroms website: https://craftinginterpreters.com
-Robert Nystroms git: https://github.com/munificent/
+
 Robert Nystroms git 'Crafting Interpreters': https://github.com/munificent/craftinginterpreters
+
+Robert Nystroms git: https://github.com/munificent/
+
 
 ## Changes to the original jlox implemetation by Robert Nystrom
 
