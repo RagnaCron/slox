@@ -1,5 +1,8 @@
 //
-// Created by anubis on 25.10.21.
+// Token
+//
+//
+// Created by Manuel Werder on 25.10.21.
 //
 
 import Foundation

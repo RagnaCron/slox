@@ -1,8 +1,8 @@
 //
-//  File.swift
+// Scanner.swift
 //  
 //
-//  Created by Osiris on 25.10.21.
+// Created by Manuel Werder on 25.10.21.
 //
 
 import Foundation
@@ -136,7 +136,6 @@ class Scanner {
         }
         // The closing ".
         let _ = advance()
-
         // Trim the surrounding quoats.
         let value = String(source[(start + 1)..<(current - 1)])
         addToken(type: .STRING, literal: .STRING(value))

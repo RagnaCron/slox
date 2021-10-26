@@ -1,5 +1,8 @@
 //
-// Created by Osiris on 24.10.21.
+// Lox.swift
+//
+//
+// Created by Manuel Werder on 24.10.21.
 //
 
 import Foundation

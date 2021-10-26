@@ -1,9 +1,15 @@
 //
-// Created by anubis on 25.10.21.
+// TokenType.swift
+//
+//
+// Created by Manuel Werder on 25.10.21.
 //
 
 import Foundation
 
+/**
+ The TokenType enum represents the core for the scanner and the later parser.
+ */
 enum TokenType {
     // Single-character tokens.
     case LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,

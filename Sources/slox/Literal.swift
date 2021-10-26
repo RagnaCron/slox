@@ -1,12 +1,22 @@
 //
-//  File.swift
+// Literal.swift
 //  
 //
-//  Created by Osiris on 25.10.21.
+// Created by Manuel Werder on 25.10.21.
 //
 
 import Foundation
 
+/**
+ The Litteral enum is used to help in the moment where a literal value has to be saved.
+ This is the case for String or Number values.
+ 
+ The Literal enum confirmes to the CustomStringConvertible Protocol. The String representation of
+ each enum case is given here:
+ - STRING(String) -> "String (passed in value)"
+ - NUMBER(Double) -> "Number (passed in value)"
+ - NONE -> returns an empty string
+ */
 enum Literal: CustomStringConvertible {
     case STRING(String)
     case NUMBER(Double)
