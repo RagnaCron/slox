@@ -38,4 +38,19 @@ enum Literal: CustomStringConvertible {
             return ""
         }
     }
+    
+    var value: Any? {
+        switch self {
+        case .STRING(let value):
+            return value
+        case .NUMBER(let value):
+            return value
+        case .BOOL(let value):
+            return value
+        case .NIL(let value):
+            return value
+        case .NONE:
+            return nil
+        }
+    }
 }
