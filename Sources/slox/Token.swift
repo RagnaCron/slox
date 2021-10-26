@@ -7,6 +7,9 @@
 
 import Foundation
 
+/**
+ The Token struct.
+ */
 struct Token: CustomStringConvertible {
 
     let type: TokenType

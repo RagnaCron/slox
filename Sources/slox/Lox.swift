@@ -45,7 +45,6 @@ final class Lox {
         while true {
             print("> ", separator: "", terminator: "")
             let line = readLine(strippingNewline: false)
-//            let line = readLine()
             if let l = line {
                 run(l)
                 Lox.hadError = false

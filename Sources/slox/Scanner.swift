@@ -37,11 +37,10 @@ final class Scanner {
     
     init(_ source: String) {
         self.source = source.map({$0})
-//        print(self.source)
         self.tokens = Array()
         self.start = 0
         self.current = 0
-        line = 1
+        self.line = 1
     }
     
     public func scanTokens() -> [Token] {
@@ -137,7 +136,7 @@ final class Scanner {
             Lox.error(at: line, inCol: current, position: "", message: "Unterminated String.")
             return
         }
-        // The closing ".
+        // The closing "
         let _ = advance()
         // Trim the surrounding quoats.
         let value = String(source[(start + 1)..<(current - 1)])
