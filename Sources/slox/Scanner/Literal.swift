@@ -20,6 +20,8 @@
 enum Literal: CustomStringConvertible {
     case STRING(String)
     case NUMBER(Double)
+    case BOOL(String)
+    case NIL(String)
     case NONE
     
     var description: String {
@@ -28,6 +30,10 @@ enum Literal: CustomStringConvertible {
             return "String '\(value)'"
         case .NUMBER(let value):
             return "Number '\(value)'"
+        case .BOOL(let value):
+            return "Bool '\(value)'"
+        case .NIL(let value):
+            return "Nil '\(value)'"
         case .NONE:
             return ""
         }
@@ -35,7 +41,7 @@ enum Literal: CustomStringConvertible {
 
     func toString() -> String {
         switch self {
-        case .STRING(let value):
+        case .STRING(let value), .BOOL(let value), .NIL(let value):
             return "\(value)"
         case .NUMBER(let value):
             return "\(value)"

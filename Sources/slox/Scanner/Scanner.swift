@@ -48,7 +48,7 @@ final class Scanner {
             start = current
             scanToken()
         }
-        tokens.append(Token(.EOF, "", .NONE, line))
+        tokens.append(Token(.EOF, "", .NONE, line, current))
         return tokens
     }
     
@@ -99,7 +99,13 @@ final class Scanner {
         }
         let text = String(source[start..<current])
         if let type = Scanner.keywords[text] {
-            addToken(type: type)
+            if (text == "true" || text == "false") {
+                addToken(type: type, literal: .BOOL(text))
+            } else if text == "nil" {
+                addToken(type: type, literal: .NIL(text))
+            } else {
+                addToken(type: type)
+            }
         } else {
             addToken(type: .IDENTIFIER)
         }
@@ -193,7 +199,7 @@ final class Scanner {
     
     private func addToken(type: TokenType, literal: Literal) {
         let text = String(source[start..<current])
-        tokens.append(Token(type, text, literal, line))
+        tokens.append(Token(type, text, literal, line, current))
     }
     
     private func advance() -> Character {
