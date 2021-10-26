@@ -5,7 +5,7 @@
 // Created by RagnaCron on 25.10.21.
 //
 
-import Foundation
+//import Foundation
 
 /**
  The TokenType enum represents the core for the scanner and the later parser.
