@@ -1,4 +1,3 @@
-/*
 //
 // Created by odin on 26.10.21.
 //
@@ -39,4 +38,3 @@ class AstPrinter: ExprVisitor {
         return builder
     }
 }
-*/
