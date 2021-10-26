@@ -32,4 +32,15 @@ enum Literal: CustomStringConvertible {
             return ""
         }
     }
+
+    func toString() -> String {
+        switch self {
+        case .STRING(let value):
+            return "\(value)"
+        case .NUMBER(let value):
+            return "\(value)"
+        case .NONE:
+            return ""
+        }
+    }
 }
