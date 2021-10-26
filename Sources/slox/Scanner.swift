@@ -2,12 +2,15 @@
 // Scanner.swift
 //  
 //
-// Created by Manuel Werder on 25.10.21.
+// Created by RagnaCron on 25.10.21.
 //
 
 import Foundation
 
-class Scanner {
+/**
+ Tha Scanner class.
+ */
+final class Scanner {
     private static let keywords: [String : TokenType] = [
         "and" : .AND,
         "class" : .CLASS,

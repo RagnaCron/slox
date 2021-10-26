@@ -2,7 +2,7 @@
 // TokenType.swift
 //
 //
-// Created by Manuel Werder on 25.10.21.
+// Created by RagnaCron on 25.10.21.
 //
 
 import Foundation

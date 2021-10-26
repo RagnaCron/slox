@@ -2,15 +2,20 @@
 // Lox.swift
 //
 //
-// Created by Manuel Werder on 24.10.21.
+// Created by RagnaCron on 24.10.21.
 //
 
 import Foundation
 
-class Lox {
+/**
+ The Lox interpreter class.
+ */
+final class Lox {
     private static var hadError = false
 
-    // The entry point for the Lox interpreter to start its job.
+    /**
+     The entry point for the Lox interpreter to start its job.
+     */
     public func main() {
         if CommandLine.arguments.count > 2 {
             print("Usage: jlox [script]")
