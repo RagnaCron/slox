@@ -99,8 +99,10 @@ final class Scanner {
         }
         let text = String(source[start..<current])
         if let type = Scanner.keywords[text] {
-            if (text == "true" || text == "false") {
-                addToken(type: type, literal: .BOOL(text))
+            if (text == "true") {
+                addToken(type: type, literal: .BOOL(true))
+            } else if text == "false" {
+                addToken(type: type, literal: .BOOL(false))
             } else if text == "nil" {
                 addToken(type: type, literal: .NIL(text))
             } else {

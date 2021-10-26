@@ -20,7 +20,7 @@ class AstPrinter: ExprVisitor {
     }
 
     public func visitLiteral(expr: LiteralExpression) -> ExprVisitorReturn {
-        return expr.value.toString()
+        return expr.value.description
     }
 
     public func visitUnary(expr: UnaryExpression) -> ExprVisitorReturn{

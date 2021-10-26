@@ -81,10 +81,10 @@ final class Parser {
 
     private func primary() throws -> Expr {
         if match([.FALSE]) {
-            return LiteralExpression(value: .BOOL("false"))
+            return LiteralExpression(value: .BOOL(false))
         }
         if match([.TRUE]) {
-            return LiteralExpression(value: .BOOL("true"))
+            return LiteralExpression(value: .BOOL(true))
         }
         if match([.NIL]) {
             return LiteralExpression(value: .NIL("nil"))
