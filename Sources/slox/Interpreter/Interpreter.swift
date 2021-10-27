@@ -25,25 +25,31 @@ class Interpreter: ExprVisitor {
         guard let left = left, let right = right else {
             return nil
         }
-        let (le,ri) = try checkNumber(expr.operation, left, right)
         switch (expr.operation.type) {
         case .GREATER:
+            let (le,ri) = try checkNumber(expr.operation, left, right)
             return le > ri
         case .GREATER_EQUAL:
+            let (le,ri) = try checkNumber(expr.operation, left, right)
             return le >= ri
         case .LESS:
+            let (le,ri) = try checkNumber(expr.operation, left, right)
             return le < ri
         case .LESS_EQUAL:
+            let (le,ri) = try checkNumber(expr.operation, left, right)
             return le <= ri
         case .BANG_EQUAL:
             return !isEqual(left, right)
         case .EQUAL_EQUAL:
             return isEqual(left, right)
         case .MINUS:
+            let (le,ri) = try checkNumber(expr.operation, left, right)
             return le - ri
         case .SLASH:
+            let (le,ri) = try checkNumber(expr.operation, left, right)
             return le / ri
         case .STAR:
+            let (le,ri) = try checkNumber(expr.operation, left, right)
             return le * ri
         case .PLUS:
             if let l = left as? Double, let r = right as? Double {
@@ -145,7 +151,11 @@ class Interpreter: ExprVisitor {
             return "nil"
         }
         if let o = object as? Double {
-            return String(o)
+            var text = String(o)
+            if text.hasSuffix(".0") {
+                text.removeLast(2)
+            }
+            return String(text)
         }
         return "\(object)"
     }
