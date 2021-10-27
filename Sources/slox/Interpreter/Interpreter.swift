@@ -25,29 +25,29 @@ class Interpreter: ExpressionVisitor {
         }
         switch (expr.operation.type) {
         case .GREATER:
-            let (le,ri) = try checkNumber(expr.operation, left, right)
+            let (le,ri) = try checkNumbers(expr.operation, left, right)
             return le > ri
         case .GREATER_EQUAL:
-            let (le,ri) = try checkNumber(expr.operation, left, right)
+            let (le,ri) = try checkNumbers(expr.operation, left, right)
             return le >= ri
         case .LESS:
-            let (le,ri) = try checkNumber(expr.operation, left, right)
+            let (le,ri) = try checkNumbers(expr.operation, left, right)
             return le < ri
         case .LESS_EQUAL:
-            let (le,ri) = try checkNumber(expr.operation, left, right)
+            let (le,ri) = try checkNumbers(expr.operation, left, right)
             return le <= ri
         case .BANG_EQUAL:
             return !isEqual(left, right)
         case .EQUAL_EQUAL:
             return isEqual(left, right)
         case .MINUS:
-            let (le,ri) = try checkNumber(expr.operation, left, right)
+            let (le,ri) = try checkNumbers(expr.operation, left, right)
             return le - ri
         case .SLASH:
-            let (le,ri) = try checkNumber(expr.operation, left, right)
+            let (le,ri) = try checkNumbers(expr.operation, left, right)
             return le / ri
         case .STAR:
-            let (le,ri) = try checkNumber(expr.operation, left, right)
+            let (le,ri) = try checkNumbers(expr.operation, left, right)
             return le * ri
         case .PLUS:
             if let l = left as? Double, let r = right as? Double {
@@ -56,7 +56,13 @@ class Interpreter: ExpressionVisitor {
             if let l = left as? String, let r = right as? String {
                 return l + r
             }
-            throw InterpreterRuntimeError(token: expr.operation, message: "Operands must be two numbers or two strings.")
+            if let l = left as? Double, let r = right as? String {
+                return removeZeros(l) + r
+            }
+            if let l = left as? String, let r = right as? Double {
+                return l + removeZeros(r)
+            }
+            throw InterpreterRuntimeError(token: expr.operation, message: "Operands must be two numbers or number + string.")
         default:
             return nil
         }
@@ -93,8 +99,11 @@ class Interpreter: ExpressionVisitor {
         throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
     }
     
-    private func checkNumber(_ operation: Token, _ left: ExpressionVisitorReturnType, _ right: ExpressionVisitorReturnType) throws -> (left: Double, right: Double) {
+    private func checkNumbers(_ operation: Token, _ left: ExpressionVisitorReturnType, _ right: ExpressionVisitorReturnType) throws -> (left: Double, right: Double) {
         if let left = left as? Double, let right = right as? Double {
+            if right == 0  {
+                throw InterpreterRuntimeError(token: operation, message: "Division by zero is not possible.")
+            }
             return (left, right)
         }
         throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
@@ -139,14 +148,18 @@ class Interpreter: ExpressionVisitor {
         guard let object = object else {
             return "nil"
         }
-        if let o = object as? Double {
-            var text = String(o)
-            if text.hasSuffix(".0") {
-                text.removeLast(2)
-            }
-            return String(text)
+        if let number = object as? Double {
+            return removeZeros(number)
         }
         return "\(object)"
+    }
+    
+    private func removeZeros(_ number: Double) -> String {
+        var text = String(number)
+        if text.hasSuffix(".0") {
+            text.removeLast(2)
+        }
+        return String(text)
     }
     
     private func evaluate(_ expr: Expression) throws -> ExpressionVisitorReturnType {
