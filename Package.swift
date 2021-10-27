@@ -15,8 +15,5 @@ let package = Package(
         .executableTarget(
             name: "slox",
             dependencies: []),
-        .testTarget(
-            name: "sloxTests",
-            dependencies: ["slox"]),
     ]
 )
