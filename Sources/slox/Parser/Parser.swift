@@ -6,31 +6,59 @@
 //
 
 final class Parser {
+    typealias Statements = [Statement]
+    typealias Tokens = [Token]
+    typealias TokenTypes = [TokenType]
+    
     private class ParserError: Error {}
 
-    private let tokens: [Token]
+    private let tokens: Tokens
     private var current: Int
 
-    init(_ tokens: [Token]) {
+    init(_ tokens: Tokens) {
         self.tokens = tokens
         current = 0
     }
     
-    public func parse() -> Expression? {
-        do {
-            return try expression()
-        } catch {
-            return nil
+    public func parse() -> Statements {
+        var statements = Statements()
+        while !isAtEnd() {
+            statements.append(try! statement())
         }
+        return statements
+//        do {
+//            return try expression()
+//        } catch {
+//            return nil
+//        }
     }
 
     private func expression() throws -> Expression {
         return try equality()
     }
+    
+    private func statement() throws -> Statement {
+        if match(tokenTypes: .PRINT) {
+            return try printStatement()
+        }
+        return try expressionStatement()
+    }
+    
+    private func printStatement() throws -> Statement {
+        let value = try expression()
+        let _ = try consume(type: .SEMICOLON, message: "Expect ';' after value.")
+        return PrintStatement(expression: value)
+    }
+    
+    private func expressionStatement() throws -> Statement {
+        let expression = try expression()
+        let _ = try consume(type: .SEMICOLON, message: "Expect ';' after expression.")
+        return ExpressionStatement(expression: expression)
+    }
 
     private func equality() throws -> Expression {
         var expr = try comparison()
-        while match([.BANG_EQUAL, .EQUAL_EQUAL]) {
+        while match(tokenTypes: .BANG_EQUAL, .EQUAL_EQUAL) {
             let op = previous()
             let right = try comparison()
             expr = BinaryExpression(left: expr, operation: op, right: right)
@@ -40,7 +68,7 @@ final class Parser {
 
     private func comparison() throws -> Expression {
         var expr = try term()
-        while match([.GREATER, .GREATER_EQUAL, .LESS, .LESS_EQUAL]) {
+        while match(tokenTypes: .GREATER, .GREATER_EQUAL, .LESS, .LESS_EQUAL) {
             let op = previous()
             let right = try term()
             expr = BinaryExpression(left: expr, operation: op, right: right)
@@ -50,7 +78,7 @@ final class Parser {
 
     private func term() throws -> Expression {
         var expr = try factor()
-        while match([.MINUS, .PLUS]) {
+        while match(tokenTypes: .MINUS, .PLUS) {
             let op = previous()
             let right = try factor()
             expr = BinaryExpression(left: expr, operation: op, right: right)
@@ -60,7 +88,7 @@ final class Parser {
 
     private func factor() throws -> Expression {
         var expr = try unary()
-        while match([.SLASH, .STAR]) {
+        while match(tokenTypes: .SLASH, .STAR) {
             let op = previous()
             let right = try unary()
             expr = BinaryExpression(left: expr, operation: op, right: right)
@@ -69,7 +97,7 @@ final class Parser {
     }
 
     private func unary() throws -> Expression {
-        if match([.BANG, .MINUS]) {
+        if match(tokenTypes: .BANG, .MINUS) {
             let op = previous()
             let right = try unary()
             return UnaryExpression(operation: op, right: right)
@@ -78,19 +106,19 @@ final class Parser {
     }
 
     private func primary() throws -> Expression {
-        if match([.FALSE]) {
+        if match(tokenTypes: .FALSE) {
             return LiteralExpression(value: .BOOL(false))
         }
-        if match([.TRUE]) {
+        if match(tokenTypes: .TRUE) {
             return LiteralExpression(value: .BOOL(true))
         }
-        if match([.NIL]) {
+        if match(tokenTypes: .NIL) {
             return LiteralExpression(value: .NIL("nil"))
         }
-        if match([.NUMBER, .STRING]) {
+        if match(tokenTypes: .NUMBER, .STRING) {
             return LiteralExpression(value: previous().literal)
         }
-        if match([.LEFT_PAREN]) {
+        if match(tokenTypes: .LEFT_PAREN) {
             let expr = try expression()
             let _ = try consume(type: .RIGHT_PAREN, message: "Expect ')' after expression.")
             return GroupingExpression(expression: expr)
@@ -98,7 +126,7 @@ final class Parser {
         throw error(token: peek(), message: "Expect expression.")
     }
 
-    private func match(_ types: [TokenType]) -> Bool {
+    private func match(tokenTypes types: TokenType...) -> Bool {
         for type in types {
             if (check(type)) {
                 let _ = advance()

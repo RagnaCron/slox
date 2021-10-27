@@ -7,19 +7,21 @@
 
 import Foundation
 
-class Interpreter: ExpressionVisitor {
+class Interpreter: ExpressionVisitor, StatementVisitor {
+    typealias Statements = [Statement]
     typealias ExpressionVisitorReturnType = Any?
     
-    public func interpret(expression: Expression) {
+    public func interpret(_ statements: Statements) {
         do {
-            let value = try evaluate(expression)
-            print(strinify(value))
+            for statement in statements {
+                try execute(statement)
+            }
         } catch {
             Lox.runtimeError(error as! InterpreterRuntimeError)
         }
     }
     
-    public func visitBinary(expr: BinaryExpression) throws -> ExpressionVisitorReturnType {
+    func visitBinary(expr: BinaryExpression) throws -> ExpressionVisitorReturnType {
         guard let left = try evaluate(expr.left), let right = try evaluate(expr.right) else {
             return nil
         }
@@ -68,18 +70,18 @@ class Interpreter: ExpressionVisitor {
         }
     }
     
-    public func visitGrouping(expr: GroupingExpression) throws -> ExpressionVisitorReturnType {
+    func visitGrouping(expr: GroupingExpression) throws -> ExpressionVisitorReturnType {
         return try evaluate(expr.expression)
     }
     
-    public func visitLiteral(expr: LiteralExpression) throws -> ExpressionVisitorReturnType {
+    func visitLiteral(expr: LiteralExpression) throws -> ExpressionVisitorReturnType {
         guard let value = expr.value.conent else {
             return nil
         }
         return value
     }
     
-    public func visitUnary(expr: UnaryExpression) throws -> ExpressionVisitorReturnType {
+    func visitUnary(expr: UnaryExpression) throws -> ExpressionVisitorReturnType {
         let right = try evaluate(expr.right);
         switch (expr.operation.type) {
         case .BANG:
@@ -164,6 +166,19 @@ class Interpreter: ExpressionVisitor {
     
     private func evaluate(_ expr: Expression) throws -> ExpressionVisitorReturnType {
         return try expr.accept(visitor: self)
+    }
+    
+    private func execute(_ statement: Statement) throws {
+        try statement.accept(visitor: self)
+    }
+    
+    func visitExpression(stmt: ExpressionStatement) throws {
+        let _ = try evaluate(stmt.expression)
+    }
+    
+    func visitPrint(stmt: PrintStatement) throws {
+        let value = try evaluate(stmt.expression)
+        print(strinify(value))
     }
     
 }

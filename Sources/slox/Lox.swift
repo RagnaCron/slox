@@ -64,13 +64,11 @@ final class Lox {
         let scanner = Scanner(source)
         let tokens = scanner.scanTokens()
         let parser = Parser(tokens)
+        let statements = parser.parse()
         if Lox.hadError {
             return
         }
-        if let expression = parser.parse() {
-            interpeter.interpret(expression: expression)
-        }
-        
+        interpeter.interpret(statements)
     }
 
     static func error(at line: Int, inCol col: Int, position: String, message: String) {
