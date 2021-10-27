@@ -9,7 +9,7 @@ struct AssignExpression: Expression {
     let name: Token
     let value: Expression
     
-    func accept<V, R>(visitor: V) throws -> R where V : ExpressionVisitor, R == V.ExpressionVisitorReturnType {
+    func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType {
         return try visitor.visitAssign(expr: self)
     }
 }

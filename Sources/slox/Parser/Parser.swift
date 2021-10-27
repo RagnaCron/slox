@@ -80,7 +80,7 @@ final class Parser {
     }
     
     private func assign() throws -> Expression {
-        let expression = try expression()
+        let expression = try equality()
         if match(tokenTypes: .EQUAL) {
             let equals = previous()
             let value = try assign()

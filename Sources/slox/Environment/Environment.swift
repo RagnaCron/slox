@@ -13,8 +13,9 @@ final class Environment {
     }
     
     public func assign(name: Token, value: Any?) throws {
-        if values.contains(where: { (key: String, value: Any?) in key == name.lexeme }) {
+        if values.contains(where: { (key: String, _) in key == name.lexeme }) {
             values.updateValue(value, forKey: name.lexeme)
+            return
         }
         throw InterpreterRuntimeError(token: name, message: "Undefined variable '\(name.lexeme)'.")
     }

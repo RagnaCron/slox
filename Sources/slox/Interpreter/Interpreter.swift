@@ -24,7 +24,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     }
     
     func visitAssign(expr: AssignExpression) throws -> ExpressionVisitorReturnType {
-        let value = try evaluate(expr)
+        let value = try evaluate(expr.value)
         try environment.assign(name: expr.name, value: value)
         return value
     }
