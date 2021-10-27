@@ -23,6 +23,12 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         }
     }
     
+    func visitAssign(expr: AssignExpression) throws -> ExpressionVisitorReturnType {
+        let value = try evaluate(expr)
+        try environment.assign(name: expr.name, value: value)
+        return value
+    }
+    
     func visitBinary(expr: BinaryExpression) throws -> ExpressionVisitorReturnType {
         guard let left = try evaluate(expr.left), let right = try evaluate(expr.right) else {
             return nil

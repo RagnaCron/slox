@@ -35,7 +35,7 @@ final class Parser {
     }
 
     private func expression() throws -> Expression {
-        return try equality()
+        return try assign()
     }
     
     private func declaration() -> Statement? {
@@ -77,6 +77,19 @@ final class Parser {
         let expression = try expression()
         let _ = try consume(type: .SEMICOLON, message: "Expect ';' after expression.")
         return ExpressionStatement(expression: expression)
+    }
+    
+    private func assign() throws -> Expression {
+        let expression = try expression()
+        if match(tokenTypes: .EQUAL) {
+            let equals = previous()
+            let value = try assign()
+            if let expr = expression as? VariableExpression {
+                return AssignExpression(name: expr.name, value: value)
+            }
+            let _ = error(token: equals, message: "Invalid assignment target.")
+        }
+        return expression
     }
 
     private func equality() throws -> Expression {

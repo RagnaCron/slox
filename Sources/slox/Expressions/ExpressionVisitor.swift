@@ -8,6 +8,7 @@
 protocol ExpressionVisitor {
     associatedtype ExpressionVisitorReturnType
 
+    func visitAssign(expr: AssignExpression) throws -> ExpressionVisitorReturnType
     func visitBinary(expr: BinaryExpression) throws -> ExpressionVisitorReturnType
     func visitGrouping(expr: GroupingExpression) throws -> ExpressionVisitorReturnType
     func visitLiteral(expr: LiteralExpression) throws -> ExpressionVisitorReturnType
