@@ -9,7 +9,7 @@
 
 /**
  The LiteralToken enum is used to help in the moment where a literal value has to be saved.
- This is the case for String or Number values.
+ This is the case for String, Number, Bool, nil as String 'nil' values.
  
  The LiteralToken enum confirmes to the CustomStringConvertible Protocol. The String representation of
  each enum case is given here:
@@ -39,7 +39,7 @@ enum Literal: CustomStringConvertible {
         }
     }
     
-    var value: Any? {
+    var conent: Any? {
         switch self {
         case .STRING(let value):
             return value
@@ -50,7 +50,8 @@ enum Literal: CustomStringConvertible {
         case .NIL(let value):
             return value
         case .NONE:
-            return nil
+            return false
         }
     }
 }
+

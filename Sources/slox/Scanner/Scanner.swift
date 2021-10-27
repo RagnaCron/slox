@@ -48,7 +48,7 @@ final class Scanner {
             start = current
             scanToken()
         }
-        tokens.append(Token(.EOF, "", nil, line, current))
+        tokens.append(Token(.EOF, "", .NONE, line, current))
         return tokens
     }
     

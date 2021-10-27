@@ -81,13 +81,13 @@ final class Parser {
 
     private func primary() throws -> Expr {
         if match([.FALSE]) {
-            return LiteralExpression(value: false)
+            return LiteralExpression(value: .BOOL(false))
         }
         if match([.TRUE]) {
-            return LiteralExpression(value: true)
+            return LiteralExpression(value: .BOOL(true))
         }
         if match([.NIL]) {
-            return LiteralExpression(value: nil)
+            return LiteralExpression(value: .NIL("nil"))
         }
         if match([.NUMBER, .STRING]) {
             return LiteralExpression(value: previous().literal)
@@ -150,27 +150,12 @@ final class Parser {
     
     private func synchronize() {
         let _ = advance()
-
         while (!isAtEnd()) {
             if previous().type == .SEMICOLON {
                 return
             }
             switch peek().type {
-            case .CLASS:
-                return
-            case .FUN:
-                return
-            case .VAR:
-                return
-            case .FOR:
-                return
-            case .IF:
-                return
-            case .WHILE:
-                return
-            case .PRINT:
-                return
-            case .RETURN:
+            case .CLASS, .FUN, .VAR, .FOR, .IF, .WHILE, .PRINT, .RETURN:
                 return
             default:
                 let _ = advance()

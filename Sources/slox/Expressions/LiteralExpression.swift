@@ -8,7 +8,7 @@
 //import Foundation
 
 struct LiteralExpression: Expr {
-    let value: Any?
+    let value: Literal
 
     func accept<V: ExprVisitor, R>(visitor: V) -> R where R == V.ExprVisitorReturn {
         return visitor.visitLiteral(expr: self)
