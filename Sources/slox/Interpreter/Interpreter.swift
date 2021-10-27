@@ -20,9 +20,7 @@ class Interpreter: ExprVisitor {
     }
     
     public func visitBinary(expr: BinaryExpression) throws -> ExprVisitorReturn {
-        let left = try evaluate(expr.left)
-        let right = try evaluate(expr.right)
-        guard let left = left, let right = right else {
+        guard let left = try evaluate(expr.left), let right = try evaluate(expr.right) else {
             return nil
         }
         switch (expr.operation.type) {
@@ -77,34 +75,25 @@ class Interpreter: ExprVisitor {
     
     public func visitUnary(expr: UnaryExpression) throws -> ExprVisitorReturn {
         let right = try evaluate(expr.right);
-
         switch (expr.operation.type) {
         case .BANG:
                 return !isTruthy(right)
         case .MINUS:
-            let r = try checkNumber(expr.operation, right)
-            return -r
+            return -(try checkNumber(expr.operation, right))
         default:
-            break
+            // unreachable
+            return nil
         }
-        // Unreachable.
-        return nil
     }
     
     private func checkNumber(_ operation: Token, _ operand: ExprVisitorReturn) throws -> Double {
-        guard let right = operand else {
-            throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
-        }
-        if let r = right as? Double {
-            return r
+        if let right = operand as? Double {
+            return right
         }
         throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
     }
     
     private func checkNumber(_ operation: Token, _ left: ExprVisitorReturn, _ right: ExprVisitorReturn) throws -> (left: Double, right: Double) {
-        guard let left = left, let right = right else {
-            throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
-        }
         if let l = left as? Double, let r = right as? Double {
             return (left: l, right: r)
         }
