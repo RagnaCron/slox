@@ -15,7 +15,7 @@ struct BinaryExpression: Expr {
     let operation: Token
     let right: Expr
 
-    func accept<V: ExprVisitor, R>(visitor: V) -> R where R == V.ExprVisitorReturn {
-        return visitor.visitBinary(expr: self)
+    func accept<V: ExprVisitor, R>(visitor: V) throws -> R where R == V.ExprVisitorReturn {
+        return try visitor.visitBinary(expr: self)
     }
 }

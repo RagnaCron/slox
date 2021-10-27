@@ -5,50 +5,46 @@
 //  Created by RagnaCron on 26.10.21.
 //
 
-//import Foundation
+import Foundation
 
 class Interpreter: ExprVisitor {
     typealias ExprVisitorReturn = Any?
     
-    public func visitBinary(expr: BinaryExpression) -> ExprVisitorReturn {
-        let left = evaluate(expr.left)
-        let right = evaluate(expr.right)
+    public func interpret(expression: Expr) {
+        do {
+            let value = try evaluate(expression)
+            print(strinify(value))
+        } catch {
+            Lox.runtimeError(error as! InterpreterRuntimeError)
+        }
+    }
+    
+    public func visitBinary(expr: BinaryExpression) throws -> ExprVisitorReturn {
+        let left = try evaluate(expr.left)
+        let right = try evaluate(expr.right)
         guard let left = left, let right = right else {
             return nil
         }
+        let (le,ri) = try checkNumber(expr.operation, left, right)
         switch (expr.operation.type) {
         case .GREATER:
-            if let l = left as? Double, let r = right as? Double {
-                return l > r
-            }
+            return le > ri
         case .GREATER_EQUAL:
-            if let l = left as? Double, let r = right as? Double {
-                return l >= r
-            }
+            return le >= ri
         case .LESS:
-            if let l = left as? Double, let r = right as? Double {
-                return l < r
-            }
+            return le < ri
         case .LESS_EQUAL:
-            if let l = left as? Double, let r = right as? Double {
-                return l <= r
-            }
+            return le <= ri
         case .BANG_EQUAL:
             return !isEqual(left, right)
         case .EQUAL_EQUAL:
             return isEqual(left, right)
         case .MINUS:
-            if let l = left as? Double, let r = right as? Double {
-                return l - r
-            }
+            return le - ri
         case .SLASH:
-            if let l = left as? Double, let r = right as? Double {
-                return l / r
-            }
+            return le / ri
         case .STAR:
-            if let l = left as? Double, let r = right as? Double {
-                return l * r
-            }
+            return le * ri
         case .PLUS:
             if let l = left as? Double, let r = right as? Double {
                 return l + r
@@ -56,42 +52,57 @@ class Interpreter: ExprVisitor {
             if let l = left as? String, let r = right as? String {
                 return l + r
             }
+            throw InterpreterRuntimeError(token: expr.operation, message: "Operands must be two numbers or two strings.")
         default:
             return nil
         }
-        // Unreachable.
-        return nil
     }
     
-    public func visitGrouping(expr: GroupingExpression) -> ExprVisitorReturn {
-        return evaluate(expr.expression)
+    public func visitGrouping(expr: GroupingExpression) throws -> ExprVisitorReturn {
+        return try evaluate(expr.expression)
     }
     
-    public func visitLiteral(expr: LiteralExpression) -> ExprVisitorReturn {
+    public func visitLiteral(expr: LiteralExpression) throws -> ExprVisitorReturn {
         guard let value = expr.value.conent else {
             return nil
         }
         return value
     }
     
-    public func visitUnary(expr: UnaryExpression) -> ExprVisitorReturn {
-        let right = evaluate(expr.right);
+    public func visitUnary(expr: UnaryExpression) throws -> ExprVisitorReturn {
+        let right = try evaluate(expr.right);
 
         switch (expr.operation.type) {
         case .BANG:
                 return !isTruthy(right)
         case .MINUS:
-            guard let right = right else {
-                return nil
-            }
-            if let r = right as? Double {
-                return -r
-            }
+            let r = try checkNumber(expr.operation, right)
+            return -r
         default:
             break
         }
         // Unreachable.
         return nil
+    }
+    
+    private func checkNumber(_ operation: Token, _ operand: ExprVisitorReturn) throws -> Double {
+        guard let right = operand else {
+            throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
+        }
+        if let r = right as? Double {
+            return r
+        }
+        throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
+    }
+    
+    private func checkNumber(_ operation: Token, _ left: ExprVisitorReturn, _ right: ExprVisitorReturn) throws -> (left: Double, right: Double) {
+        guard let left = left, let right = right else {
+            throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
+        }
+        if let l = left as? Double, let r = right as? Double {
+            return (left: l, right: r)
+        }
+        throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
     }
     
     private func isTruthy(_ object: Any?) -> Bool {
@@ -129,8 +140,18 @@ class Interpreter: ExprVisitor {
         return false
     }
     
-    private func evaluate(_ expr: Expr) -> ExprVisitorReturn {
-        return expr.accept(visitor: self)
+    private func strinify(_ object: ExprVisitorReturn) -> String {
+        guard let object = object else {
+            return "nil"
+        }
+        if let o = object as? Double {
+            return String(o)
+        }
+        return "\(object)"
+    }
+    
+    private func evaluate(_ expr: Expr) throws -> ExprVisitorReturn {
+        return try expr.accept(visitor: self)
     }
     
 }

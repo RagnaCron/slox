@@ -5,8 +5,6 @@
 // Created by RagnaCron on 25.10.21.
 //
 
-//import Foundation
-
 /**
  The LiteralToken enum is used to help in the moment where a literal value has to be saved.
  This is the case for String, Number, Bool, nil as String 'nil' values.

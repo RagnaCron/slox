@@ -12,7 +12,10 @@ import Foundation
  */
 final class Lox {
     private static var hadError = false
-
+    private static var hadRuntimeError = false
+    
+    private let interpeter = Interpreter()
+    
     /**
      The entry point for the Lox interpreter to start its job.
      */
@@ -39,6 +42,9 @@ final class Lox {
         if Lox.hadError {
             exit(65)
         }
+        if Lox.hadRuntimeError {
+            exit(70)
+        }
     }
 
     private func runPrompt() {
@@ -58,12 +64,11 @@ final class Lox {
         let scanner = Scanner(source)
         let tokens = scanner.scanTokens()
         let parser = Parser(tokens)
-        if let expression = parser.parse() {
-            print(AstPrinter().print(expr: expression))
-        }
-        
         if Lox.hadError {
             return
+        }
+        if let expression = parser.parse() {
+            interpeter.interpret(expression: expression)
         }
         
     }
@@ -83,5 +88,10 @@ final class Lox {
         } else {
             report(at: token.line, inCol: token.col, position: " at '" + token.lexeme + "'", message: message)
         }
+    }
+    
+    static func runtimeError(_ error: InterpreterRuntimeError) {
+        print("[line \(error.token.line)] \(error.message)")
+        hadRuntimeError = true
     }
 }

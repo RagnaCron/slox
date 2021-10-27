@@ -5,8 +5,6 @@
 // Created by RagnaCron on 26.10.21.
 //
 
-//import Foundation
-
 final class Parser {
     private class ParserError: Error {}
 

@@ -10,7 +10,7 @@
 struct GroupingExpression: Expr {
     let expression: Expr
 
-    func accept<V: ExprVisitor, R>(visitor: V) -> R where R == V.ExprVisitorReturn {
-        return visitor.visitGrouping(expr: self)
+    func accept<V: ExprVisitor, R>(visitor: V) throws -> R where R == V.ExprVisitorReturn {
+        return try visitor.visitGrouping(expr: self)
     }
 }
