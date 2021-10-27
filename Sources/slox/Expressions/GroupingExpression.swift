@@ -7,10 +7,10 @@
 
 //import Foundation
 
-struct GroupingExpression: Expr {
-    let expression: Expr
+struct GroupingExpression: Expression {
+    let expression: Expression
 
-    func accept<V: ExprVisitor, R>(visitor: V) throws -> R where R == V.ExprVisitorReturn {
+    func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType {
         return try visitor.visitGrouping(expr: self)
     }
 }

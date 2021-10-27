@@ -7,10 +7,10 @@
 
 import Foundation
 
-class Interpreter: ExprVisitor {
-    typealias ExprVisitorReturn = Any?
+class Interpreter: ExpressionVisitor {
+    typealias ExpressionVisitorReturnType = Any?
     
-    public func interpret(expression: Expr) {
+    public func interpret(expression: Expression) {
         do {
             let value = try evaluate(expression)
             print(strinify(value))
@@ -19,7 +19,7 @@ class Interpreter: ExprVisitor {
         }
     }
     
-    public func visitBinary(expr: BinaryExpression) throws -> ExprVisitorReturn {
+    public func visitBinary(expr: BinaryExpression) throws -> ExpressionVisitorReturnType {
         guard let left = try evaluate(expr.left), let right = try evaluate(expr.right) else {
             return nil
         }
@@ -62,18 +62,18 @@ class Interpreter: ExprVisitor {
         }
     }
     
-    public func visitGrouping(expr: GroupingExpression) throws -> ExprVisitorReturn {
+    public func visitGrouping(expr: GroupingExpression) throws -> ExpressionVisitorReturnType {
         return try evaluate(expr.expression)
     }
     
-    public func visitLiteral(expr: LiteralExpression) throws -> ExprVisitorReturn {
+    public func visitLiteral(expr: LiteralExpression) throws -> ExpressionVisitorReturnType {
         guard let value = expr.value.conent else {
             return nil
         }
         return value
     }
     
-    public func visitUnary(expr: UnaryExpression) throws -> ExprVisitorReturn {
+    public func visitUnary(expr: UnaryExpression) throws -> ExpressionVisitorReturnType {
         let right = try evaluate(expr.right);
         switch (expr.operation.type) {
         case .BANG:
@@ -86,16 +86,16 @@ class Interpreter: ExprVisitor {
         }
     }
     
-    private func checkNumber(_ operation: Token, _ operand: ExprVisitorReturn) throws -> Double {
+    private func checkNumber(_ operation: Token, _ operand: ExpressionVisitorReturnType) throws -> Double {
         if let right = operand as? Double {
             return right
         }
         throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
     }
     
-    private func checkNumber(_ operation: Token, _ left: ExprVisitorReturn, _ right: ExprVisitorReturn) throws -> (left: Double, right: Double) {
-        if let l = left as? Double, let r = right as? Double {
-            return (left: l, right: r)
+    private func checkNumber(_ operation: Token, _ left: ExpressionVisitorReturnType, _ right: ExpressionVisitorReturnType) throws -> (left: Double, right: Double) {
+        if let left = left as? Double, let right = right as? Double {
+            return (left, right)
         }
         throw InterpreterRuntimeError(token: operation, message: "Operand must be a number.")
     }
@@ -135,7 +135,7 @@ class Interpreter: ExprVisitor {
         return false
     }
     
-    private func strinify(_ object: ExprVisitorReturn) -> String {
+    private func strinify(_ object: ExpressionVisitorReturnType) -> String {
         guard let object = object else {
             return "nil"
         }
@@ -149,7 +149,7 @@ class Interpreter: ExprVisitor {
         return "\(object)"
     }
     
-    private func evaluate(_ expr: Expr) throws -> ExprVisitorReturn {
+    private func evaluate(_ expr: Expression) throws -> ExpressionVisitorReturnType {
         return try expr.accept(visitor: self)
     }
     

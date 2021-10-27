@@ -7,10 +7,10 @@
 
 //import Foundation
 
-struct LiteralExpression: Expr {
+struct LiteralExpression: Expression {
     let value: Literal
 
-    func accept<V: ExprVisitor, R>(visitor: V) throws -> R where R == V.ExprVisitorReturn {
+    func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType {
         return try visitor.visitLiteral(expr: self)
     }
 }

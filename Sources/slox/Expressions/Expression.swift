@@ -8,6 +8,6 @@
 /**
  The Expression (Expr) Protocol is the base for all Expressions in Lox.
  */
-protocol Expr {
-    func accept<V: ExprVisitor, R>(visitor: V) throws -> R where R == V.ExprVisitorReturn
+protocol Expression {
+    func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType
 }

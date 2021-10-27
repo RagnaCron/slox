@@ -16,7 +16,7 @@ final class Parser {
         current = 0
     }
     
-    public func parse() -> Expr? {
+    public func parse() -> Expression? {
         do {
             return try expression()
         } catch {
@@ -24,11 +24,11 @@ final class Parser {
         }
     }
 
-    private func expression() throws -> Expr {
+    private func expression() throws -> Expression {
         return try equality()
     }
 
-    private func equality() throws -> Expr {
+    private func equality() throws -> Expression {
         var expr = try comparison()
         while match([.BANG_EQUAL, .EQUAL_EQUAL]) {
             let op = previous()
@@ -38,7 +38,7 @@ final class Parser {
         return expr
     }
 
-    private func comparison() throws -> Expr {
+    private func comparison() throws -> Expression {
         var expr = try term()
         while match([.GREATER, .GREATER_EQUAL, .LESS, .LESS_EQUAL]) {
             let op = previous()
@@ -48,7 +48,7 @@ final class Parser {
         return expr
     }
 
-    private func term() throws -> Expr {
+    private func term() throws -> Expression {
         var expr = try factor()
         while match([.MINUS, .PLUS]) {
             let op = previous()
@@ -58,7 +58,7 @@ final class Parser {
         return expr
     }
 
-    private func factor() throws -> Expr {
+    private func factor() throws -> Expression {
         var expr = try unary()
         while match([.SLASH, .STAR]) {
             let op = previous()
@@ -68,7 +68,7 @@ final class Parser {
         return expr
     }
 
-    private func unary() throws -> Expr {
+    private func unary() throws -> Expression {
         if match([.BANG, .MINUS]) {
             let op = previous()
             let right = try unary()
@@ -77,7 +77,7 @@ final class Parser {
         return try primary()
     }
 
-    private func primary() throws -> Expr {
+    private func primary() throws -> Expression {
         if match([.FALSE]) {
             return LiteralExpression(value: .BOOL(false))
         }
