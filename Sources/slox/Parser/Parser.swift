@@ -8,7 +8,6 @@
 final class Parser {
     typealias Statements = [Statement]
     typealias Tokens = [Token]
-    typealias TokenTypes = [TokenType]
     
     private class ParserError: Error {}
 
@@ -23,7 +22,9 @@ final class Parser {
     public func parse() -> Statements {
         var statements = Statements()
         while !isAtEnd() {
-            statements.append(try! statement())
+            if let statement = declaration() {
+                statements.append(statement)
+            }
         }
         return statements
 //        do {
@@ -35,6 +36,28 @@ final class Parser {
 
     private func expression() throws -> Expression {
         return try equality()
+    }
+    
+    private func declaration() -> Statement? {
+        do {
+            if match(tokenTypes: .VAR) {
+                return try variableDeclaration()
+            }
+            return try statement()
+        } catch {
+            synchronize()
+            return nil
+        }
+    }
+    
+    private func variableDeclaration() throws -> Statement {
+        let name = try consume(type: .IDENTIFIER, message: "Expect variable name.")
+        var initializer: Expression?
+        if (match(tokenTypes: .EQUAL)) {
+            initializer = try expression()
+        }
+        let _ = try consume(type: .SEMICOLON, message: "Expect ';' after variable declaration.")
+        return VariableStatement(name: name, initializer: initializer)
     }
     
     private func statement() throws -> Statement {
@@ -117,6 +140,9 @@ final class Parser {
         }
         if match(tokenTypes: .NUMBER, .STRING) {
             return LiteralExpression(value: previous().literal)
+        }
+        if match(tokenTypes: .IDENTIFIER) {
+            return VariableExpression(name: previous())
         }
         if match(tokenTypes: .LEFT_PAREN) {
             let expr = try expression()

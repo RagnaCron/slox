@@ -11,6 +11,8 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     typealias Statements = [Statement]
     typealias ExpressionVisitorReturnType = Any?
     
+    private let environment = Environment()
+    
     public func interpret(_ statements: Statements) {
         do {
             for statement in statements {
@@ -92,6 +94,10 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
             // unreachable
             return nil
         }
+    }
+    
+    func visitVariable(expr: VariableExpression) throws -> ExpressionVisitorReturnType {
+        return try environment.get(name:expr.name)
     }
     
     private func checkNumber(_ operation: Token, _ operand: ExpressionVisitorReturnType) throws -> Double {
@@ -179,6 +185,14 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     func visitPrint(stmt: PrintStatement) throws {
         let value = try evaluate(stmt.expression)
         print(strinify(value))
+    }
+    
+    func visitVariable(stmt: VariableStatement) throws {
+        var value: Any?
+        if let initial = stmt.initializer {
+            value = try evaluate(initial)
+        }
+        environment.define(name: stmt.name.lexeme, value: value)
     }
     
 }
