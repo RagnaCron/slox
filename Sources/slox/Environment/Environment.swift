@@ -26,12 +26,20 @@ final class Environment {
             values.updateValue(value, forKey: name.lexeme)
             return
         }
+        if let env = environment {
+            try env.assign(name: name, value: value)
+            return
+        }
         throw InterpreterRuntimeError(token: name, message: "Undefined variable '\(name.lexeme)'.")
     }
     
     public func get(name: Token) throws -> Any? {
         if let value = values[name.lexeme] {
             return value
+        }
+        
+        if let env = environment {
+            return try env.get(name:name)
         }
         throw InterpreterRuntimeError(token: name, message: "Undefined variable '\(name.lexeme)'.")
     }
