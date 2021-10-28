@@ -109,7 +109,7 @@ final class Parser {
     }
     
     private func assign() throws -> Expression {
-        let expression = try equality()
+        let expression = try or()
         if match(tokenTypes: .EQUAL) {
             let equals = previous()
             let value = try assign()
@@ -117,6 +117,26 @@ final class Parser {
                 return AssignExpression(name: expr.name, value: value)
             }
             let _ = error(token: equals, message: "Invalid assignment target.")
+        }
+        return expression
+    }
+    
+    private func or() throws -> Expression {
+        var expression = try and()
+        while match(tokenTypes: .OR) {
+            let operation = previous()
+            let right = try and()
+            expression = LogicalExpression(left: expression, operation: operation, right: right)
+        }
+        return expression
+    }
+    
+    private func and() throws -> Expression {
+        var expression = try equality()
+        while match(tokenTypes: .AND) {
+            let operation = previous()
+            let right = try equality()
+            expression = LogicalExpression(left: expression, operation: operation, right: right)
         }
         return expression
     }

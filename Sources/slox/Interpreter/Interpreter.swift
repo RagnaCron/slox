@@ -89,11 +89,26 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         return value
     }
     
+    func visitLogical(expr: LogicalExpression) throws -> ExpressionVisitorReturnType {
+        let left = try evaluate(expr.left)
+        if (expr.operation.type == TokenType.OR) {
+            if isTruthy(left) {
+                return left
+            }
+        } else {
+            if !isTruthy(left) {
+                return left
+            }
+        }
+        return try evaluate(expr.right)
+    }
+    
+    
     func visitUnary(expr: UnaryExpression) throws -> ExpressionVisitorReturnType {
         let right = try evaluate(expr.right);
         switch (expr.operation.type) {
         case .BANG:
-                return !isTruthy(right)
+            return !isTruthy(right)
         case .MINUS:
             return -(try checkNumber(expr.operation, right))
         default:
@@ -130,7 +145,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         if let b = object as? Bool {
             return b
         }
-        return true
+        return false
     }
     
     private func isEqual(_ left: Any?, _ right: Any?) -> Bool {
@@ -152,9 +167,9 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         if let l = left as? Double, let r = right as? Double {
             return l == r
         }
-//        if let l = left as? LoxFunction, let r = right as? LoxFunction {
-//            return l == r
-//        }
+        //        if let l = left as? LoxFunction, let r = right as? LoxFunction {
+        //            return l == r
+        //        }
         return false
     }
     
