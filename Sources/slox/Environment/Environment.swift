@@ -6,7 +6,16 @@
 //
 
 final class Environment {
+    private var environment: Environment?
     private var values = [String : Any?]()
+    
+    public init() {
+        self.environment = nil
+    }
+    
+    public init(_ env: Environment) {
+        self.environment = env
+    }
     
     public func define(name: String, value: Any?) {
         values.updateValue(value, forKey: name)
