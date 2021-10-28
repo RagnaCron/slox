@@ -61,6 +61,9 @@ final class Parser {
     }
     
     private func statement() throws -> Statement {
+        if match(tokenTypes: .IF) {
+            return try ifStatement()
+        }
         if match(tokenTypes: .PRINT) {
             return try printStatement()
         }
@@ -68,6 +71,18 @@ final class Parser {
             return try BlockStatement(statements: block())
         }
         return try expressionStatement()
+    }
+    
+    private func ifStatement() throws -> Statement {
+        let _ = try consume(type: .LEFT_PAREN, message: "Expect '(' after if.")
+        let condition = try expression()
+        let _ = try consume(type: .RIGHT_PAREN, message: "Expect ')' after if condition")
+        let thenBranch = try statement()
+        var elseBranch: Statement?
+        if match(tokenTypes: .ELSE) {
+            elseBranch = try statement()
+        }
+        return IfStatement(condition: condition, thenBranch: thenBranch, elseBranch: elseBranch)
     }
     
     private func printStatement() throws -> Statement {

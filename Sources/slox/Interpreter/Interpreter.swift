@@ -205,6 +205,14 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         let _ = try evaluate(stmt.expression)
     }
     
+    func visitIf(stmt: IfStatement) throws {
+        if isTruthy(try evaluate(stmt.condition)) {
+            try execute(stmt.thenBranch)
+        } else if let elseBranch = stmt.elseBranch {
+            try execute(elseBranch)
+        }
+    }
+    
     func visitPrint(stmt: PrintStatement) throws {
         let value = try evaluate(stmt.expression)
         print(stringify(value))
