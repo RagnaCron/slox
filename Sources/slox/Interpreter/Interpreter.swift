@@ -241,4 +241,9 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         environment.define(name: stmt.name.lexeme, value: value)
     }
     
+    func visitWhile(stmt: WhileStatement) throws {
+        while isTruthy(try evaluate(stmt.condition)) {
+            try execute(stmt.body)
+        }
+    }
 }

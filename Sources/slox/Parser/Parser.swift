@@ -61,16 +61,68 @@ final class Parser {
     }
     
     private func statement() throws -> Statement {
+        if match(tokenTypes: .FOR) {
+            return try forStatement()
+        }
         if match(tokenTypes: .IF) {
             return try ifStatement()
         }
         if match(tokenTypes: .PRINT) {
             return try printStatement()
         }
+        if match(tokenTypes: .WHILE) {
+            return try whileStatement()
+        }
         if match(tokenTypes: .LEFT_BRACE) {
             return try BlockStatement(statements: block())
         }
         return try expressionStatement()
+    }
+    
+    private func forStatement() throws -> Statement {
+        let _ = try consume(type: .LEFT_PAREN, message: "Expect '(' after for.")
+        var initializer: Statement?
+        if match(tokenTypes: .SEMICOLON) {
+            initializer = nil
+        } else if match(tokenTypes: .VAR) {
+            initializer = try variableDeclaration()
+        } else {
+            initializer = try expressionStatement()
+        }
+        var condition: Expression?
+        if !check(.SEMICOLON) {
+            condition = try expression()
+        }
+        let _ = try consume(type: .SEMICOLON, message: "Expect ';' after loop condition")
+        var increment: Expression?
+        if !check(.RIGHT_PAREN) {
+            increment = try expression()
+        }
+        let _ = try consume(type: .RIGHT_PAREN, message: "Expect ')' after the clauses.")
+        var body = try statement()
+        
+        if let inc = increment {
+            body = BlockStatement(statements: [body, ExpressionStatement(expression: inc)])
+        }
+        
+        if condition == nil {
+            condition = LiteralExpression(value: .BOOL(true))
+        }
+        body = WhileStatement(condition: condition!, body: body)
+        
+        if let ini = initializer {
+            body = BlockStatement(statements: [ini, body])
+        }
+        
+        return body
+    }
+    
+    private func whileStatement() throws -> Statement {
+        let _ = try consume(type: .LEFT_PAREN, message: "Expect '(' after while.")
+        let condition = try expression()
+        let _ = try consume(type: .RIGHT_PAREN, message: "Expect ')' after condition.")
+        let body = try statement()
+        return WhileStatement(condition: condition, body: body)
     }
     
     private func ifStatement() throws -> Statement {
