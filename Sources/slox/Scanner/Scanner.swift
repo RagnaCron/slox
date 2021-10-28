@@ -165,7 +165,7 @@ final class Scanner {
     
     private func peek() -> Character {
         if isAtEnd() {
-            return Character("\0")
+            return "\0"
         }
         return source[current]
     }
