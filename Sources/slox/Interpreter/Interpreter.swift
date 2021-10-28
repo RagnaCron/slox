@@ -158,7 +158,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         return false
     }
     
-    private func strinify(_ object: ExpressionVisitorReturnType) -> String {
+    private func stringify(_ object: ExpressionVisitorReturnType) -> String {
         guard let object = object else {
             return "nil"
         }
@@ -207,7 +207,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     
     func visitPrint(stmt: PrintStatement) throws {
         let value = try evaluate(stmt.expression)
-        print(strinify(value))
+        print(stringify(value))
     }
     
     func visitVariable(stmt: VariableStatement) throws {
