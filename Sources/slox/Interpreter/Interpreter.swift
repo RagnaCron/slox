@@ -11,7 +11,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     typealias Statements = [Statement]
     typealias ExpressionVisitorReturnType = Any?
     
-    private let environment = Environment()
+    private var environment = Environment()
     
     public func interpret(_ statements: Statements) {
         do {
@@ -182,6 +182,23 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     
     private func execute(_ statement: Statement) throws {
         try statement.accept(visitor: self)
+    }
+    
+    private func executeBlock(statements: Statements, env: Environment) {
+        let previous = environment
+        defer {
+            environment = previous
+        }
+        do {
+            environment = env
+            for statement in statements {
+                try execute(statement)
+            }
+        } catch {}
+    }
+    
+    func visitBlock(stmt: BlockStatement) {
+        executeBlock(statements: stmt.statements, env: Environment(environment))
     }
     
     func visitExpression(stmt: ExpressionStatement) throws {

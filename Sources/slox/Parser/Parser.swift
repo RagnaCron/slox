@@ -64,6 +64,9 @@ final class Parser {
         if match(tokenTypes: .PRINT) {
             return try printStatement()
         }
+        if match(tokenTypes: .LEFT_BRACE) {
+            return try BlockStatement(statements: block())
+        }
         return try expressionStatement()
     }
     
@@ -77,6 +80,17 @@ final class Parser {
         let expression = try expression()
         let _ = try consume(type: .SEMICOLON, message: "Expect ';' after expression.")
         return ExpressionStatement(expression: expression)
+    }
+    
+    private func block() throws -> Statements {
+        var statements = Statements()
+        while !check(.RIGHT_BRACE) && !isAtEnd() {
+            if let statement = declaration() {
+                statements.append(statement)
+            }
+        }
+        let _ = try consume(type: .RIGHT_BRACE, message: "Expect '}' after block.")
+        return statements
     }
     
     private func assign() throws -> Expression {
