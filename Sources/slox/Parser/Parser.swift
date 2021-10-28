@@ -27,11 +27,6 @@ final class Parser {
             }
         }
         return statements
-//        do {
-//            return try expression()
-//        } catch {
-//            return nil
-//        }
     }
 
     private func expression() throws -> Expression {

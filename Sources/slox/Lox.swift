@@ -82,9 +82,9 @@ final class Lox {
     
     static func error(token: Token, message: String) {
         if token.type == .EOF {
-            report(at: token.line, inCol: token.col, position: " at end", message: message)
+            report(at: token.line, inCol: token.col, position: "at end", message: message)
         } else {
-            report(at: token.line, inCol: token.col, position: " at '" + token.lexeme + "'", message: message)
+            report(at: token.line, inCol: token.col, position: "at '\(token.lexeme)'", message: message)
         }
     }
     
