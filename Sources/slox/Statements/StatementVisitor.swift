@@ -11,6 +11,7 @@ protocol StatementVisitor {
     func visitFunction(stmt: FunctionStatement) throws
     func visitIf(stmt: IfStatement) throws
     func visitPrint(stmt: PrintStatement) throws
+    func visitReturn(stmt: ReturnStatement) throws
     func visitVariable(stmt: VariableStatement) throws
     func visitWhile(stmt: WhileStatement) throws
 }

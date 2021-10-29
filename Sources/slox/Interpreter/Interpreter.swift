@@ -221,21 +221,25 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         try statement.accept(visitor: self)
     }
     
-    func executeBlock(statements: Statements, env: Environment) {
+    func executeBlock(statements: Statements, env: Environment) throws {
         let previous = environment
         defer {
             environment = previous
         }
-        do {
-            environment = env
-            for statement in statements {
-                try execute(statement)
-            }
-        } catch {}
+        environment = env
+        for statement in statements {
+            try execute(statement)
+        }
+//        do {
+//            environment = env
+//            for statement in statements {
+//                try execute(statement)
+//            }
+//        } catch {}
     }
     
-    func visitBlock(stmt: BlockStatement) {
-        executeBlock(statements: stmt.statements, env: Environment(environment))
+    func visitBlock(stmt: BlockStatement) throws  {
+        try executeBlock(statements: stmt.statements, env: Environment(environment))
     }
     
     func visitExpression(stmt: ExpressionStatement) throws {
@@ -258,6 +262,14 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     func visitPrint(stmt: PrintStatement) throws {
         let value = try evaluate(stmt.expression)
         print(stringify(value))
+    }
+    
+    func visitReturn(stmt: ReturnStatement) throws {
+        var value: Any?
+        if let statementValue = stmt.value {
+            value = try evaluate(statementValue)
+        }
+        throw Return(value: value)
     }
     
     func visitVariable(stmt: VariableStatement) throws {

@@ -23,7 +23,13 @@ class LoxFunction: LoxCallable {
             env.define(name: declaration.parameters[index].lexeme, value: arguments[index])
             index = index + 1
         }
-        interpreter.executeBlock(statements: declaration.body, env: env)
+        do {
+            try interpreter.executeBlock(statements: declaration.body, env: env)
+        } catch {
+            if let returnExeption = error as? Return {
+                return returnExeption.value
+            }
+        }
         return nil
     }
     

@@ -86,6 +86,9 @@ final class Parser {
         if match(tokenTypes: .PRINT) {
             return try printStatement()
         }
+        if match(tokenTypes: .RETURN) {
+            return try returnStatement()
+        }
         if match(tokenTypes: .WHILE) {
             return try whileStatement()
         }
@@ -157,6 +160,16 @@ final class Parser {
         let value = try expression()
         let _ = try consume(type: .SEMICOLON, message: "Expect ';' after value.")
         return PrintStatement(expression: value)
+    }
+    
+    private func returnStatement() throws -> Statement {
+        let keyword = previous()
+        var value: Expression?
+        if !check(.SEMICOLON) {
+            value = try expression()
+        }
+        let _ = try consume(type: .SEMICOLON, message: "Expect ';' after return value.")
+        return ReturnStatement(keyword: keyword, value: value)
     }
     
     private func expressionStatement() throws -> Statement {
