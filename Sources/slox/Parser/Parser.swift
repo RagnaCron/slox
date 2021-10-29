@@ -35,6 +35,9 @@ final class Parser {
     
     private func declaration() -> Statement? {
         do {
+            if match(tokenTypes: .FUN) {
+                return try function(kind: "function")
+            }
             if match(tokenTypes: .VAR) {
                 return try variableDeclaration()
             }
@@ -43,6 +46,24 @@ final class Parser {
             synchronize()
             return nil
         }
+    }
+    
+    private func function(kind: String) throws -> Statement {
+        let name = try consume(type: .IDENTIFIER, message: "Expect \(kind) name.")
+        let _ = try consume(type: .LEFT_PAREN, message: "Expect '(' after \(kind) name.")
+        var parameters = [Token]()
+        if !check(.RIGHT_PAREN) {
+            repeat {
+                if parameters.count >= 255 {
+                    let _ = error(token: peek(), message: "Can't have more than 255 parameters.")
+                }
+                parameters.append(try consume(type: .IDENTIFIER, message: "Expect parameter name."))
+            } while match(tokenTypes: .COMMA)
+        }
+        let _ = try consume(type: .RIGHT_PAREN, message: "Expect ')' after parameters.")
+        let _ = try consume(type: .LEFT_BRACE, message: "Expect '{' before \(kind) body.")
+        let body = try block()
+        return FunctionStatement(name: name, parameters: parameters, body: body)
     }
     
     private func variableDeclaration() throws -> Statement {

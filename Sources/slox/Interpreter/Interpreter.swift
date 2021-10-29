@@ -11,7 +11,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     typealias Statements = [Statement]
     typealias ExpressionVisitorReturnType = Any?
     
-    private let globals = Environment()
+    let globals = Environment()
     private var environment: Environment
     
     public init() {
@@ -221,7 +221,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         try statement.accept(visitor: self)
     }
     
-    private func executeBlock(statements: Statements, env: Environment) {
+    func executeBlock(statements: Statements, env: Environment) {
         let previous = environment
         defer {
             environment = previous
@@ -240,6 +240,11 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     
     func visitExpression(stmt: ExpressionStatement) throws {
         let _ = try evaluate(stmt.expression)
+    }
+    
+    func visitFunction(stmt: FunctionStatement) throws {
+        let fun = LoxFunction(declaration: stmt)
+        environment.define(name: stmt.name.lexeme, value: fun)
     }
     
     func visitIf(stmt: IfStatement) throws {

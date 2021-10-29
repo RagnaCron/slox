@@ -1,5 +1,5 @@
 //
-//  LoxFunction.swift
+//  ClockFun.swift
 //  
 //
 //  Created by RagnaCron on 29.10.21.
@@ -12,7 +12,7 @@ final class ClockFun: LoxCallable {
         return 0
     }
     
-    public func call(_ callee: Interpreter, _ arguments: [Any?]) -> Any {
+    public func call(_ callee: Interpreter, _ arguments: [Any?]) -> Any? {
         return Date().timeIntervalSince1970 * 1000
     }
     

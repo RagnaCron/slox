@@ -7,5 +7,5 @@
 
 protocol LoxCallable: CustomStringConvertible {
     func arity() -> Int
-    func call(_ callee: Interpreter, _ arguments: [Any?]) -> Any
+    func call(_ callee: Interpreter, _ arguments: [Any?]) -> Any?
 }
