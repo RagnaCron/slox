@@ -234,9 +234,35 @@ final class Parser {
             let right = try unary()
             return UnaryExpression(operation: op, right: right)
         }
-        return try primary()
+        return try call()
+    }
+    
+    private func call() throws -> Expression {
+        var expression = try primary()
+        while true {
+            if match(tokenTypes: .LEFT_PAREN) {
+                expression = try finishCall(callee: expression)
+            } else {
+                break
+            }
+        }
+        return expression
     }
 
+    private func finishCall(callee: Expression) throws -> Expression {
+        var arguments = [Expression]()
+        if !check(.RIGHT_PAREN) {
+            repeat {
+                if (arguments.count >= 255) {
+                    let _ = error(token: peek(), message: "Can't have more than 255 arguments.")
+                }
+                arguments.append(try expression())
+            } while match(tokenTypes: .COMMA)
+        }
+        let paren = try consume(type: .RIGHT_PAREN, message: "Expect ')' after arguments.")
+        return CallExpression(calle: callee, parenthesis: paren, arguments: arguments)
+    }
+    
     private func primary() throws -> Expression {
         if match(tokenTypes: .FALSE) {
             return LiteralExpression(value: .BOOL(false))

@@ -10,6 +10,7 @@ protocol ExpressionVisitor {
 
     func visitAssign(expr: AssignExpression) throws -> ExpressionVisitorReturnType
     func visitBinary(expr: BinaryExpression) throws -> ExpressionVisitorReturnType
+    func visitCall(expr: CallExpression) throws -> ExpressionVisitorReturnType
     func visitGrouping(expr: GroupingExpression) throws -> ExpressionVisitorReturnType
     func visitLiteral(expr: LiteralExpression) throws -> ExpressionVisitorReturnType
     func visitLogical(expr: LogicalExpression) throws -> ExpressionVisitorReturnType

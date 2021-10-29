@@ -10,6 +10,7 @@ import Foundation
 class Interpreter: ExpressionVisitor, StatementVisitor {
     typealias Statements = [Statement]
     typealias ExpressionVisitorReturnType = Any?
+    typealias ExpressionCallerReturnType = Any?
     
     private var environment = Environment()
     
@@ -76,6 +77,21 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         default:
             return nil
         }
+    }
+    
+    func visitCall(expr: CallExpression) throws -> ExpressionVisitorReturnType {
+        let calle = try evaluate(expr.calle)
+        var arguments = [ExpressionVisitorReturnType]()
+        for argument in expr.arguments {
+            arguments.append(try evaluate(argument))
+        }
+        guard let loxFun = calle as? LoxCallable else {
+            throw InterpreterRuntimeError(token: expr.parenthesis, message: "Can only call function and classes.")
+        }
+        if loxFun.arity() != arguments.count {
+            throw InterpreterRuntimeError(token: expr.parenthesis, message: "Expected \(loxFun.arity()) arguments but got \(arguments.count).")
+        }
+        return loxFun.call(self, arguments)
     }
     
     func visitGrouping(expr: GroupingExpression) throws -> ExpressionVisitorReturnType {
