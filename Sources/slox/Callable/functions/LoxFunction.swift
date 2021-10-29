@@ -7,9 +7,11 @@
 
 class LoxFunction: LoxCallable {
     private let declaration: FunctionStatement
+    private let closure: Environment
     
-    init(declaration: FunctionStatement) {
+    init(declaration: FunctionStatement, closure: Environment) {
         self.declaration = declaration
+        self.closure = closure
     }
     
     func arity() -> Int {
@@ -17,7 +19,7 @@ class LoxFunction: LoxCallable {
     }
     
     func call(_ interpreter: Interpreter, _ arguments: [Any?]) -> Any? {
-        let env = Environment(interpreter.globals)
+        let env = Environment(closure)
         var index = 0
         while index < declaration.parameters.count {
             env.define(name: declaration.parameters[index].lexeme, value: arguments[index])

@@ -247,7 +247,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     }
     
     func visitFunction(stmt: FunctionStatement) throws {
-        let fun = LoxFunction(declaration: stmt)
+        let fun = LoxFunction(declaration: stmt, closure: environment)
         environment.define(name: stmt.name.lexeme, value: fun)
     }
     
