@@ -10,9 +10,15 @@ import Foundation
 class Interpreter: ExpressionVisitor, StatementVisitor {
     typealias Statements = [Statement]
     typealias ExpressionVisitorReturnType = Any?
-    typealias ExpressionCallerReturnType = Any?
     
-    private var environment = Environment()
+    private let globals = Environment()
+    private var environment: Environment
+    
+    public init() {
+        self.environment = globals
+        
+        globals.define(name: "clock", value: ClockFun() ) 
+    }
     
     public func interpret(_ statements: Statements) {
         do {
