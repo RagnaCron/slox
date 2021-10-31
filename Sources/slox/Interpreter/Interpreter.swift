@@ -7,7 +7,8 @@
 
 import Foundation
 
-class Interpreter: ExpressionVisitor, StatementVisitor {
+final class Interpreter: ExpressionVisitor, StatementVisitor {
+
     typealias Statements = [Statement]
     typealias ExpressionVisitorReturnType = Any?
     
@@ -104,6 +105,14 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
             throw InterpreterRuntimeError(token: expr.parenthesis, message: "Expected \(loxFun.arity()) arguments but got \(arguments.count).")
         }
         return loxFun.call(self, arguments)
+    }
+    
+    func visitGet(expr: GetExpression) throws -> ExpressionVisitorReturnType {
+        let object = try evaluate(expr.object)
+        if let object = object as? LoxInstance {
+            return try object.get(name: expr.name)
+        }
+        throw InterpreterRuntimeError(token: expr.name, message:  "Only instances have properties.")
     }
     
     func visitGrouping(expr: GroupingExpression) throws -> ExpressionVisitorReturnType {
@@ -252,6 +261,12 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     
     func visitBlock(stmt: BlockStatement) throws  {
         try executeBlock(statements: stmt.statements, env: Environment(environment))
+    }
+    
+    func visitClass(stmt: ClassStatement) throws {
+        environment.define(name: stmt.name.lexeme, value: nil)
+        let klass = LoxClass(name: stmt.name.lexeme)
+        try environment.assign(name: stmt.name, value: klass)
     }
     
     func visitExpression(stmt: ExpressionStatement) throws {

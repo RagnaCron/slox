@@ -35,6 +35,10 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
         }
     }
     
+    func visitGet(expr: GetExpression) throws -> ExpressionVisitorReturnType {
+        try resolve(expr: expr.object)
+    }
+    
     func visitGrouping(expr: GroupingExpression) throws -> ExpressionVisitorReturnType {
         try resolve(expr: expr.expression)
     }
@@ -63,6 +67,11 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
         beginScope()
         try resolve(statements: stmt.statements)
         endScope()
+    }
+    
+    func visitClass(stmt: ClassStatement) throws {
+        declare(name: stmt.name)
+        define(name: stmt.name)
     }
     
     func visitExpression(stmt: ExpressionStatement) throws {

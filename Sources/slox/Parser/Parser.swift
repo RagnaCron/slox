@@ -35,6 +35,9 @@ final class Parser {
     
     private func declaration() -> Statement? {
         do {
+            if match(tokenTypes: .CLASS) {
+                return try classDeclaration()
+            }
             if match(tokenTypes: .FUN) {
                 return try function(kind: "function")
             }
@@ -48,7 +51,18 @@ final class Parser {
         }
     }
     
-    private func function(kind: String) throws -> Statement {
+    private func classDeclaration() throws -> Statement {
+        let name = try consume(type: .IDENTIFIER, message: "Expect class name.")
+        let _ = try consume(type: .LEFT_BRACE, message:  "Expect '{' before class body.")
+        var methods = [FunctionStatement]()
+        while !check(.RIGHT_BRACE) && !isAtEnd() {
+            methods.append(try function(kind: "method"))
+        }
+        let _ = try consume(type: .RIGHT_BRACE, message: "Expect '}' after class body.")
+        return ClassStatement(name: name, methods: methods)
+    }
+    
+    private func function(kind: String) throws -> FunctionStatement {
         let name = try consume(type: .IDENTIFIER, message: "Expect \(kind) name.")
         let _ = try consume(type: .LEFT_PAREN, message: "Expect '(' after \(kind) name.")
         var parameters = [Token]()
@@ -276,6 +290,9 @@ final class Parser {
         while true {
             if match(tokenTypes: .LEFT_PAREN) {
                 expression = try finishCall(callee: expression)
+            } else if match(tokenTypes: .DOT) {
+                let name = try consume(type: .IDENTIFIER, message: "Expect property name after '.'.")
+                expression = GetExpression(object: expression, name: name)
             } else {
                 break
             }

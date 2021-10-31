@@ -7,6 +7,7 @@
 
 protocol StatementVisitor {
     func visitBlock(stmt: BlockStatement) throws
+    func visitClass(stmt: ClassStatement) throws
     func visitExpression(stmt: ExpressionStatement) throws
     func visitFunction(stmt: FunctionStatement) throws
     func visitIf(stmt: IfStatement) throws
