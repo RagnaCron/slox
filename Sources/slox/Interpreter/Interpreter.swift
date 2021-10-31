@@ -11,7 +11,8 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     typealias Statements = [Statement]
     typealias ExpressionVisitorReturnType = Any?
     
-    let globals = Environment()
+    private var locals = [Expression: Int]()
+    private let globals = Environment()
     private var environment: Environment
     
     public init() {
@@ -140,7 +141,11 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     }
     
     func visitVariable(expr: VariableExpression) throws -> ExpressionVisitorReturnType {
-        return try environment.get(name:expr.name)
+        return try lookUpVariable(name: expr.name, expr: expr)
+    }
+    
+    private func lookUpVariable<E: Expression>(name: Token, expr: E) throws -> ExpressionVisitorReturnType {
+        
     }
     
     private func checkNumber(_ operation: Token, _ operand: ExpressionVisitorReturnType) throws -> Double {
@@ -221,6 +226,10 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         try statement.accept(visitor: self)
     }
     
+    func resolve(expr: Expression, depth: Int) {
+        locals.updateValue(depth, forKey: expr)
+    }
+    
     func executeBlock(statements: Statements, env: Environment) throws {
         let previous = environment
         defer {
@@ -230,12 +239,6 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         for statement in statements {
             try execute(statement)
         }
-//        do {
-//            environment = env
-//            for statement in statements {
-//                try execute(statement)
-//            }
-//        } catch {}
     }
     
     func visitBlock(stmt: BlockStatement) throws  {

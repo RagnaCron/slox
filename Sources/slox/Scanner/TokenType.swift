@@ -10,7 +10,7 @@
 /**
  The TokenType enum represents the core for the scanner and the later parser.
  */
-enum TokenType {
+enum TokenType: String {
     // Single-character tokens.
     case LEFT_PAREN,
          RIGHT_PAREN,

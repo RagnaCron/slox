@@ -2,7 +2,7 @@
 //  VariableExpression.swift
 //  
 //
-//  Created by Osiris on 27.10.21.
+//  Created by RagnaCron on 27.10.21.
 //
 
 struct VariableExpression: Expression {

@@ -10,7 +10,7 @@
 /**
  The Token struct.
  */
-struct Token: CustomStringConvertible {
+struct Token: CustomStringConvertible, Hashable {
 
     let type: TokenType
     let lexeme: String
