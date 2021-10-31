@@ -6,15 +6,15 @@
 //
 
 final class Environment {
-    private var environment: Environment?
+    private var enclosing: Environment?
     private var values = [String : Any?]()
     
     public init() {
-        self.environment = nil
+        self.enclosing = nil
     }
     
     public init(_ env: Environment) {
-        self.environment = env
+        self.enclosing = env
     }
     
     public func define(name: String, value: Any?) {
@@ -26,11 +26,15 @@ final class Environment {
             values.updateValue(value, forKey: name.lexeme)
             return
         }
-        if let env = environment {
+        if let env = enclosing {
             try env.assign(name: name, value: value)
             return
         }
         throw InterpreterRuntimeError(token: name, message: "Undefined variable '\(name.lexeme)'.")
+    }
+    
+    public func assignAt(_ distance: Int, name: Token, value: Any?) {
+        ancestor(distance: distance).values.updateValue(value, forKey: name.lexeme)
     }
     
     public func get(name: Token) throws -> Any? {
@@ -38,9 +42,25 @@ final class Environment {
             return value
         }
         
-        if let env = environment {
+        if let env = enclosing {
             return try env.get(name:name)
         }
         throw InterpreterRuntimeError(token: name, message: "Undefined variable '\(name.lexeme)'.")
+    }
+    
+    public func getAt(_ distance: Int, name: String) throws -> Any? {
+        return ancestor(distance:distance).values[name]!
+    }
+    
+    private func ancestor(distance: Int) -> Environment {
+        var env = self
+        var index = 0
+        while index < distance {
+            if let e = env.enclosing {
+                env = e
+            }
+            index = index + 1
+        }
+        return env
     }
 }

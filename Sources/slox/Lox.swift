@@ -65,6 +65,12 @@ final class Lox {
         let tokens = scanner.scanTokens()
         let parser = Parser(tokens)
         let statements = parser.parse()
+        let resolver = Resolver(interpreter: interpeter)
+        do {
+            try resolver.resolve(statements: statements)
+        } catch {
+            Lox.hadError = true
+        }
         if Lox.hadError {
             return
         }

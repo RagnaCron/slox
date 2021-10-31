@@ -7,10 +7,14 @@
 
 //import Foundation
 
-struct GroupingExpression: Expression {
+final class GroupingExpression: Expression {
     let expression: Expression
 
-    func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType {
+    override func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType {
         return try visitor.visitGrouping(expr: self)
+    }
+    
+    init(expression: Expression) {
+        self.expression = expression
     }
 }

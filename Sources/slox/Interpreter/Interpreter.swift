@@ -34,6 +34,11 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
     func visitAssign(expr: AssignExpression) throws -> ExpressionVisitorReturnType {
         let value = try evaluate(expr.value)
         try environment.assign(name: expr.name, value: value)
+        if let distance = locals[expr] {
+            environment.assignAt(distance, name: expr.name, value: value)
+        } else {
+            try globals.assign(name: expr.name, value: value)
+        }
         return value
     }
     
@@ -144,8 +149,12 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         return try lookUpVariable(name: expr.name, expr: expr)
     }
     
-    private func lookUpVariable<E: Expression>(name: Token, expr: E) throws -> ExpressionVisitorReturnType {
-        
+    private func lookUpVariable(name: Token, expr: Expression) throws -> ExpressionVisitorReturnType {
+        if let distance = locals[expr] {
+            return try environment.getAt(distance, name: name.lexeme)
+        } else {
+            return try globals.get(name: name)
+        }
     }
     
     private func checkNumber(_ operation: Token, _ operand: ExpressionVisitorReturnType) throws -> Double {

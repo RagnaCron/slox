@@ -6,8 +6,18 @@
 //
 
 /**
- The Expression (Expr) Protocol is the base for all Expressions in Lox.
+ The Expression (Expr) Class  is the base for all Expressions in Lox.
  */
-protocol Expression {
-    func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType
+class Expression: Equatable, Hashable {
+    func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType {
+        fatalError("You have to implement a subclass...!!!")
+    }
+    
+    static func == (lhs: Expression, rhs: Expression) -> Bool {
+        return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
+    }
 }
