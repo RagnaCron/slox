@@ -281,7 +281,7 @@ class Interpreter: ExpressionVisitor, StatementVisitor {
         if let statementValue = stmt.value {
             value = try evaluate(statementValue)
         }
-        throw Return(value: value)
+        throw ReturnError(value: value)
     }
     
     func visitVariable(stmt: VariableStatement) throws {

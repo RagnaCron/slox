@@ -5,6 +5,6 @@
 //  Created by RagnaCron on 29.10.21.
 //
 
-struct Return: Error {
+struct ReturnError: Error {
     let value: Any?
 }

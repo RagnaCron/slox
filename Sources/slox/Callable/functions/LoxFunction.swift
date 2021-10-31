@@ -28,7 +28,7 @@ class LoxFunction: LoxCallable {
         do {
             try interpreter.executeBlock(statements: declaration.body, env: env)
         } catch {
-            if let returnExeption = error as? Return {
+            if let returnExeption = error as? ReturnError {
                 return returnExeption.value
             }
         }

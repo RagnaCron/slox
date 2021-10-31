@@ -6,13 +6,16 @@
 //
 
 final class Resolver: ExpressionVisitor, StatementVisitor {
+    
     typealias ExpressionVisitorReturnType = Void
+    
     private let interpreter: Interpreter
-    private let scopes = Stack()
+    private let scopes: Stack
     private var currentFunction = FunctionType.NONE
     
     init(interpreter: Interpreter) {
         self.interpreter = interpreter
+        self.scopes = Stack()
     }
     
     func visitAssign(expr: AssignExpression) throws -> ExpressionVisitorReturnType {
