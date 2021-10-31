@@ -9,6 +9,7 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
     typealias ExpressionVisitorReturnType = Void
     private let interpreter: Interpreter
     private let scopes = Stack()
+    private var currentFunction = FunctionType.NONE
     
     init(interpreter: Interpreter) {
         self.interpreter = interpreter
@@ -68,7 +69,7 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
     func visitFunction(stmt: FunctionStatement) throws {
         declare(name: stmt.name)
         define(name: stmt.name)
-        try resolveFun(stmt: stmt)
+        try resolveFun(stmt: stmt, type: .FUNCTION)
     }
     
     func visitIf(stmt: IfStatement) throws {
@@ -84,6 +85,9 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
     }
     
     func visitReturn(stmt: ReturnStatement) throws {
+        if currentFunction == .NONE {
+            Lox.error(token: stmt.keyword, message: "Can't return from top-level code.")
+        }
         if let value = stmt.value {
             try resolve(expr: value)
         }
@@ -102,7 +106,7 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
         try resolve(stmt: stmt.body)
     }
     
-    private func resolve(statements: [Statement]) throws {
+    public func resolve(statements: [Statement]) throws {
         for statement in statements {
             try resolve(stmt: statement)
         }
@@ -126,7 +130,10 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
         }
     }
     
-    private func resolveFun(stmt: FunctionStatement) throws {
+    private func resolveFun(stmt: FunctionStatement, type: FunctionType) throws {
+        let enclosingFunType = currentFunction
+        currentFunction = type
+        
         beginScope()
         for param in stmt.parameters {
             declare(name: param)
@@ -134,6 +141,7 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
         }
         try resolve(statements: stmt.body)
         endScope()
+        currentFunction = enclosingFunType
     }
     
     private func beginScope() {
@@ -145,6 +153,13 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
     }
     
     private func declare(name: Token) {
+        if scopes.isEmpty {
+            return
+        }
+        let scope = scopes.peek()
+        if scope.keys.contains(name.lexeme) {
+            Lox.error(token: name, message: "Already a variable with this name in this scope.")
+        }
         scopes.insertToTopScope(value: false, forKey: name.lexeme)
     }
     

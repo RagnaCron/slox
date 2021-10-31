@@ -15,7 +15,7 @@
  - NUMBER(Double) -> "Number (passed in value)"
  - NONE -> returns an empty string
  */
-enum Literal: CustomStringConvertible, Hashable {
+enum Literal: CustomStringConvertible {
     case STRING(String)
     case NUMBER(Double)
     case BOOL(Bool)

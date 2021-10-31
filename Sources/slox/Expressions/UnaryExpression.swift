@@ -7,11 +7,16 @@
 
 //import Foundation
 
-struct UnaryExpression: Expression {
+final class UnaryExpression: Expression {
     let operation: Token
     let right: Expression
 
-    func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType {
+    override func accept<V: ExpressionVisitor, R>(visitor: V) throws -> R where R == V.ExpressionVisitorReturnType {
         return try visitor.visitUnary(expr: self)
+    }
+    
+    init(operation: Token, right: Expression) {
+        self.operation = operation
+        self.right = right
     }
 }

@@ -294,7 +294,7 @@ final class Parser {
             } while match(tokenTypes: .COMMA)
         }
         let paren = try consume(type: .RIGHT_PAREN, message: "Expect ')' after arguments.")
-        return CallExpression(calle: callee, parenthesis: paren, arguments: arguments)
+        return CallExpression(callee: callee, parenthesis: paren, arguments: arguments)
     }
     
     private func primary() throws -> Expression {
