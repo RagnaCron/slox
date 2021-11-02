@@ -52,6 +52,11 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
         try resolve(expr: expr.right)
     }
     
+    func visitSet(expr: SetExpression) throws -> ExpressionVisitorReturnType {
+        try resolve(expr: expr.value)
+        try resolve(expr: expr.object)
+    }
+    
     func visitUnary(expr: UnaryExpression) throws -> ExpressionVisitorReturnType {
         try resolve(expr: expr.right)
     }

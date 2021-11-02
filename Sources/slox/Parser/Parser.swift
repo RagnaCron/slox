@@ -30,7 +30,7 @@ final class Parser {
     }
 
     private func expression() throws -> Expression {
-        return try assign()
+        return try assignment()
     }
     
     private func declaration() -> Statement? {
@@ -203,13 +203,16 @@ final class Parser {
         return statements
     }
     
-    private func assign() throws -> Expression {
+    private func assignment() throws -> Expression {
         let expression = try or()
         if match(tokenTypes: .EQUAL) {
             let equals = previous()
-            let value = try assign()
+            let value = try assignment()
             if let expr = expression as? VariableExpression {
                 return AssignExpression(name: expr.name, value: value)
+            }
+            else if let expr = expression as? GetExpression {
+                return SetExpression(object: expr.object, name: expr.name, value: value)
             }
             let _ = error(token: equals, message: "Invalid assignment target.")
         }

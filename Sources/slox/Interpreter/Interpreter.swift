@@ -140,6 +140,15 @@ final class Interpreter: ExpressionVisitor, StatementVisitor {
         return try evaluate(expr.right)
     }
     
+    func visitSet(expr: SetExpression) throws -> ExpressionVisitorReturnType {
+        let object = try evaluate(expr.object)
+        if let obj = object as? LoxInstance {
+            let value = try evaluate(expr.value)
+            obj.set(name: expr.name, value: value!)
+            return value
+        }
+        throw InterpreterRuntimeError(token: expr.name, message: "Only instances have fields.")
+    }
     
     func visitUnary(expr: UnaryExpression) throws -> ExpressionVisitorReturnType {
         let right = try evaluate(expr.right);

@@ -24,4 +24,8 @@ final class LoxInstance: CustomStringConvertible {
         throw InterpreterRuntimeError(token: name, message: "Undefined property '" + name.lexeme + "'.")
     }
     
+    func set(name: Token, value: Any) {
+        fields[name.lexeme] = value
+    }
+    
 }
