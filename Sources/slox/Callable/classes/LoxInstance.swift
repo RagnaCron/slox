@@ -21,6 +21,9 @@ final class LoxInstance: CustomStringConvertible {
         if let field = fields[name.lexeme] {
             return field
         }
+        if let method = klass.find(method: name.lexeme) {
+            return method
+        }
         throw InterpreterRuntimeError(token: name, message: "Undefined property '" + name.lexeme + "'.")
     }
     

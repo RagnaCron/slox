@@ -76,6 +76,9 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
     
     func visitClass(stmt: ClassStatement) throws {
         declare(name: stmt.name)
+        for method in stmt.methods {
+            try resolveFun(stmt: method, type: .METHOD)
+        }
         define(name: stmt.name)
     }
     

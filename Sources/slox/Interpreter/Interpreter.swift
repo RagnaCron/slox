@@ -274,7 +274,12 @@ final class Interpreter: ExpressionVisitor, StatementVisitor {
     
     func visitClass(stmt: ClassStatement) throws {
         environment.define(name: stmt.name.lexeme, value: nil)
-        let klass = LoxClass(name: stmt.name.lexeme)
+        var methods = [String: LoxFunction]()
+        for method in stmt.methods {
+            let function = LoxFunction(declaration: method, closure: environment)
+            methods[method.name.lexeme] = function
+        }
+        let klass = LoxClass(name: stmt.name.lexeme, methods: methods)
         try environment.assign(name: stmt.name, value: klass)
     }
     
