@@ -140,6 +140,10 @@ final class Interpreter: ExpressionVisitor, StatementVisitor {
         return try evaluate(expr.right)
     }
     
+    func visitSelf(expr: SelfExpression) throws -> ExpressionVisitorReturnType {
+        return try lookUpVariable(name: expr.keyword, expr: expr)
+    }
+    
     func visitSet(expr: SetExpression) throws -> ExpressionVisitorReturnType {
         let object = try evaluate(expr.object)
         if let obj = object as? LoxInstance {
@@ -158,8 +162,7 @@ final class Interpreter: ExpressionVisitor, StatementVisitor {
         case .MINUS:
             return -(try checkNumber(expr.operation, right))
         default:
-            // unreachable
-            return nil
+            return nil // unreachable
         }
     }
     

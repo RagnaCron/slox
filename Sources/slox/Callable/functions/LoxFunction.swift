@@ -39,5 +39,9 @@ class LoxFunction: LoxCallable {
         return "function \(declaration.name.lexeme)"
     }
     
-    
+    func bind(_ instance: LoxInstance) -> LoxFunction {
+        let env = Environment(closure)
+        env.define(name: "self", value: instance)
+        return LoxFunction(declaration: declaration, closure: env)
+    }
 }

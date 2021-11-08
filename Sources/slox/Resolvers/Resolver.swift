@@ -52,6 +52,10 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
         try resolve(expr: expr.right)
     }
     
+    func visitSelf(expr: SelfExpression) throws -> ExpressionVisitorReturnType {
+        try resolveLocal(expr: expr, name: expr.keyword)
+    }
+    
     func visitSet(expr: SetExpression) throws -> ExpressionVisitorReturnType {
         try resolve(expr: expr.value)
         try resolve(expr: expr.object)
@@ -76,10 +80,15 @@ final class Resolver: ExpressionVisitor, StatementVisitor {
     
     func visitClass(stmt: ClassStatement) throws {
         declare(name: stmt.name)
+        define(name: stmt.name)
+        beginScope()
+        var scope = scopes.pop()
+        scope["self"] = true
+        scopes.push(scope)
         for method in stmt.methods {
             try resolveFun(stmt: method, type: .METHOD)
         }
-        define(name: stmt.name)
+        endScope()
     }
     
     func visitExpression(stmt: ExpressionStatement) throws {

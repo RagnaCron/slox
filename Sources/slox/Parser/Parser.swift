@@ -330,6 +330,9 @@ final class Parser {
         if match(tokenTypes: .NUMBER, .STRING) {
             return LiteralExpression(value: previous().literal)
         }
+        if match(tokenTypes: .SELF) {
+            return SelfExpression(keyword: previous())
+        }
         if match(tokenTypes: .IDENTIFIER) {
             return VariableExpression(name: previous())
         }
